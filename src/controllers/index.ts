@@ -4,3 +4,4 @@ export { SoundController } from "./sound.controller";
 export { ToastController } from "./toast.controller";
 export { TranslationController } from "./translation.controller";
 export { ThemeController } from "./theme.controller";
+export { TutorialController } from "./tutorial.controller";
