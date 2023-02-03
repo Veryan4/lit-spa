@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "eamodio.gitlens",
+    "esbenp.prettier-vscode",
+    "formulahendry.auto-rename-tag",
+    "ms-azuretools.vscode-docker",
+    "runem.lit-plugin",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}
