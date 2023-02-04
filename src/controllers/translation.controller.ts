@@ -94,7 +94,7 @@ export class TranslationController {
     this.host = host;
     this.scope = scope;
     host.addController(this);
-    this.loadTranslations(this.language, scope);
+    this.loadTranslations(this.language, this.scope);
   }
 
   hostConnected() {
@@ -104,16 +104,16 @@ export class TranslationController {
     );
     window.addEventListener(
       translateService.TRANSLATION_LOADED_EVENT,
-      this._changeLanguage as EventListener
+      this._translationLoaded as EventListener
     );
   }
 
   hostDisconnected() {
     window.removeEventListener(
       translateService.LANGUAGE_CHANGE_EVENT,
-      this._translationLoaded as EventListener
+      this._changeLanguage as EventListener
     );
-    window.addEventListener(
+    window.removeEventListener(
       translateService.TRANSLATION_LOADED_EVENT,
       this._translationLoaded as EventListener
     );
