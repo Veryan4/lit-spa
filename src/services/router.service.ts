@@ -71,8 +71,9 @@ function patternToRegExp(pattern: string): RegExp {
   }
 }
 
-function testRoute(uri: string, pattern: string): boolean | void {
-  if (patternToRegExp(pattern).test(uri)) {
-    return true;
-  }
+function testRoute(uri: string, patterns: string | string[]): boolean | void {
+  if (typeof patterns == "string") {
+    patterns = [patterns]
+  } 
+  return patterns.some(pattern => patternToRegExp(pattern).test(uri))
 }

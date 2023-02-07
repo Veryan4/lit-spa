@@ -22,7 +22,7 @@ class RouteDirective extends AsyncDirective {
       // Rendered asynchronously:
       this.setValue(resolvedValue);
     });
-    return html`<app-loader></app-loader>`;
+    return html`<lit-spa-loader></lit-spa-loader>`;
   }
 }
 const routeDirective = directive(RouteDirective);
@@ -52,7 +52,9 @@ export class RouteController {
       return;
     }
     this.queryParams = routerService.parseQueryParams();
-    this.pathParams = routerService.parsePathParams(nextRoute.pattern, uri);
+    if (typeof nextRoute.pattern == "string") {
+      this.pathParams = routerService.parsePathParams(nextRoute.pattern, uri);
+    }
     if (nextRoute.name === this.activeRoute.name) {
       return;
     }
