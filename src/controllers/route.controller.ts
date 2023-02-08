@@ -42,17 +42,21 @@ export class RouteController {
 
   _changeRoute = (e?: CustomEvent) => {
     const uri = decodeURI(window.location.pathname);
-    let nextRoute = this.routes.find((route) =>
-      routerService.testRoute(uri, route.pattern)
-    );
+    let nextRoute = this.routes.find((route) => {
+      if (Array.isArray(route.pattern)) {
+        return route.pattern.some(p => routerService.testRoute(uri, p))
+      } else {
+        return routerService.testRoute(uri, route.pattern)
+      }
+    });
     if (!nextRoute) {
-      nextRoute = this.routes.find((route) => route.pattern === "*");
+      nextRoute = this.findRouteByPattern("*");
     }
     if (!nextRoute) {
       return;
     }
     this.queryParams = routerService.parseQueryParams();
-    if (typeof nextRoute.pattern == "string") {
+    if (!Array.isArray(nextRoute.pattern)) {
       this.pathParams = routerService.parsePathParams(nextRoute.pattern, uri);
     }
     if (nextRoute.name === this.activeRoute.name) {
@@ -70,9 +74,7 @@ export class RouteController {
         this.host.requestUpdate();
       })
       .catch((errorRoute) => {
-        const errRoute = this.routes.find(
-          (route) => route.pattern === errorRoute
-        );
+        const errRoute = this.findRouteByPattern(errorRoute);
         if (errRoute) {
           this.activeRoute = errRoute;
           window.history.pushState({}, "", errRoute.name);
@@ -84,7 +86,7 @@ export class RouteController {
   constructor(host: ReactiveControllerHost, routes: Route[]) {
     this.host = host;
     this.routes = routes;
-    const homeRoute = this.routes.find((route) => route.pattern === "");
+    const homeRoute = this.findRouteByPattern("");
     if (homeRoute) {
       this.activeRoute = homeRoute;
     }
@@ -104,5 +106,15 @@ export class RouteController {
       routerService.ROUTE_EVENT,
       this._changeRoute as EventListener
     );
+  }
+
+  findRouteByPattern(pattern: string){
+    return this.routes.find((route) => {
+      if (Array.isArray(route.pattern)) {
+        return route.pattern.some(p => p === pattern)
+      } else {
+        return route.pattern === pattern;
+      }
+    });
   }
 }
