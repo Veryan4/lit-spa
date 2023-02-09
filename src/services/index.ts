@@ -3,3 +3,4 @@ export { themeService } from "./theme.service";
 export { toastService } from "./toast.service";
 export { translateService } from "./translate.service";
 export { httpService } from "./http.service";
+export { soundService } from "./sound.service";

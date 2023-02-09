@@ -1,7 +1,7 @@
 import { ReactiveControllerHost } from "lit";
+import { soundService } from "../services";
 
 const SOUND_STORAGE_KEY = "lit-spa-sound-storage";
-const SOUND_EVENT_KEY = "lit-spa-sound-event";
 
 export class SoundController {
   private host: ReactiveControllerHost;
@@ -25,22 +25,21 @@ export class SoundController {
   }
 
   play(sound: HTMLAudioElement): void {
-    if (!this.soundPlaying && this.value) {
-      this.soundPlaying = true;
-      sound.play().then(() => (this.soundPlaying = false));
+    if (this.value) {
+      soundService.playSound(sound);
     }
   }
 
   hostConnected(): void {
     window.addEventListener(
-      SOUND_EVENT_KEY,
+      soundService.SOUND_EVENT_KEY,
       this._changeSound as EventListener
     );
   }
 
   hostDisconnected(): void {
     window.removeEventListener(
-      SOUND_EVENT_KEY,
+      soundService.SOUND_EVENT_KEY,
       this._changeSound as EventListener
     );
   }
