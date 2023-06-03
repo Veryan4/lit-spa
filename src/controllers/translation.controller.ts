@@ -10,7 +10,7 @@ import { translateService } from "../services";
 
 class TranslationDirective extends Directive {
   private currentLanguage: string;
-  private translations: Record<string, any>;
+  private translations: Map<string, string>;
   private properties: Record<string, string | number>;
 
   update(
@@ -28,7 +28,7 @@ class TranslationDirective extends Directive {
   render(
     translationKey: string,
     language: string,
-    translations: Record<string, any>,
+    translations: Map<string, string>,
     properties?: Record<string, string | number>
   ) {
     if (
@@ -52,7 +52,7 @@ export class TranslationController {
   private host: ReactiveControllerHost;
   language = translateService.initLanguage();
   scope?: string;
-  translations = {};
+  translations = new Map<string, string>();
   translationCacheKey: string;
 
   loadTranslations: (...args: any) => any = translateService.loadTranslations;

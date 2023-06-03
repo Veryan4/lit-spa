@@ -4,11 +4,14 @@ import { classMap } from "lit-html/directives/class-map.js";
 import { until } from "lit/directives/until.js";
 import { Toast } from "../../models";
 import { translateService } from "../../services";
+import { TranslationController } from "../../controllers";
 import { styles } from "./toast.styles";
 
 @customElement("lit-spa-toast")
 export class ToastComponent extends LitElement {
   static styles = [styles];
+
+  private i18n = new TranslationController(this);
 
   @property({ type: Object })
   toast: Toast;
@@ -27,7 +30,7 @@ export class ToastComponent extends LitElement {
       html` <div class="toast-container">
         <div class="toast ${classMap(classes)}">
           <div class="toast-wrap">
-            ${translateService.t(this.toast.key, this.toast.properties)}
+            ${this.i18n.t(this.toast.key, this.toast.properties)}
           </div>
         </div>
       </div>`

@@ -44,7 +44,7 @@ function loadTranslations(lang: string, scope?: string, debounce = 100) {
           detail: {
             lang,
             scope,
-            translations: translationCache[lang][scope],
+            translations: toTranslationMap(translationCache[lang][scope]),
             translationCacheKey,
           },
         })
@@ -61,7 +61,7 @@ function loadTranslations(lang: string, scope?: string, debounce = 100) {
         detail: {
           lang,
           scope,
-          translations: translationCache[lang][NO_SCOPE_KEY],
+          translations: toTranslationMap(translationCache[lang][NO_SCOPE_KEY]),
           translationCacheKey,
         },
       })
@@ -71,21 +71,33 @@ function loadTranslations(lang: string, scope?: string, debounce = 100) {
 
 function t(
   record: string,
-  translations: any,
+  translations: Map<string, string>,
   placeholders?: Record<string, string | number>
 ): string {
   const cleaned = record.replaceAll(":", ".");
-  let result = { ...translations };
-  try {
-    cleaned.split(".").forEach((key: string) => (result = result[key]));
-  } catch {
-    return record;
-  }
-  if (!placeholders) return result;
-  return result.replace(/{\w+}/g, (all: string) => {
+  const value = translations.get(cleaned);
+  if (!value) return record;
+  if (!placeholders) return value;
+  return value.replace(/{\w+}/g, (all: string) => {
     all = all.substring(1).slice(0, -1);
-    return placeholders[all] || all;
+    return (placeholders[all] as any) || all;
   });
+}
+
+function toTranslationMap(obj: Record<string, any>): Map<string, string> {
+  function walk(
+    into: Map<string, string>,
+    obj: Record<string, any>,
+    prefix: string[] = []
+  ) {
+    Object.entries(obj).forEach(([key, val]) => {
+      if (typeof val === "object") walk(into, val, [...prefix, key]);
+      else into.set([...prefix, key].join("."), val);
+    });
+  }
+  const out = new Map<string, string>();
+  walk(out, obj);
+  return out;
 }
 
 function initLanguage(): string {
