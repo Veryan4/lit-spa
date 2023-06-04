@@ -10,6 +10,22 @@ import { classMap } from "lit-html/directives/class-map.js";
 import { styleMap } from "lit-html/directives/style-map.js";
 import { styles } from "./tooltip.styles";
 
+export type TooltipPosition = "top"
+  | "top-start"
+  | "top-end"
+  | "right"
+  | "right-start"
+  | "right-end"
+  | "bottom"
+  | "bottom-start"
+  | "bottom-end"
+  | "left"
+  | "left-start"
+  | "left-end"
+  | string;
+export type TooltipStrategy = "absolute" | "fixed";
+export type TooltipMode = "hover" | "click";
+
 @customElement("lit-spa-tooltip")
 export class ToolTipComponent extends LitElement {
   static styles = [styles];
@@ -24,26 +40,13 @@ export class ToolTipComponent extends LitElement {
   text: string;
 
   @property({ type: String })
-  position:
-    | "top"
-    | "top-start"
-    | "top-end"
-    | "right"
-    | "right-start"
-    | "right-end"
-    | "bottom"
-    | "bottom-start"
-    | "bottom-end"
-    | "left"
-    | "left-start"
-    | "left-end"
-    | string;
+  position: TooltipPosition;
 
   @property({ type: String })
-  strategy: "absolute" | "fixed" = "absolute";
+  strategy: TooltipStrategy = "absolute";
 
   @property({ type: String })
-  mode: "hover" | "click" = "hover";
+  mode: TooltipMode = "hover";
 
   @property({ type: Number })
   offsetX = 0;

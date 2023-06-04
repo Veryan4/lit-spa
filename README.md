@@ -92,13 +92,13 @@ class SinglePageApp extends LitElement {
    render() {
     return html`
       <div class="body" @click=${this.changeLanguage}>
-        ${this.i18.t('hello.helloWorld')}
+        ${this.i18n.t('hello.helloWorld')}
       </div>
     `;
   }
 
   changeLanguage() {
-    if (this.i18.currentLanguage == 'en') {
+    if (this.i18.language == 'en') {
       translateService.useLanguage('fr');
     } else {
       translateService.useLanguage('en');
@@ -112,13 +112,14 @@ class SinglePageApp extends LitElement {
 Leveraging css variables in order to have a theme remain consistent across isolated components.
 
 ```typescript
-import { LitElement, html } from "lit";
+import { LitElement, html, css } from "lit";
 import { ThemeController, themeService } from "@veryan/lit-spa";
 
 @customElement("my-app")
 class SinglePageApp extends LitElement {
 
-  styles = [`
+  styles = [
+    css`
     .body{
       color: var(--color);
       background-color: var(--background-color);

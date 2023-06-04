@@ -7,7 +7,7 @@ import {
   TranslationController,
   routerService,
   themeService,
-} from "..";
+} from "../src";
 import { routes } from "./app.routes";
 
 @customElement("my-app")

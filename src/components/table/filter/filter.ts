@@ -22,9 +22,6 @@ export class FilterComponent extends LitElement {
   @property({ type: Object })
   column: TableColumn;
 
-  @property({ type: Number })
-  columnHeight: number;
-
   @property({ type: Object })
   labels = defaultFilterLabels;
 

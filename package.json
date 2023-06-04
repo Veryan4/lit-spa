@@ -34,8 +34,8 @@
   ],
   "scripts": {
     "dev": "vite --mode=dev",
-    "build-lib": "tsc && vite build --mode lib",
-    "build": "tsc && vite build",
+    "build-lib": "tsc --project tsconfig.lib.json && vite build --mode lib",
+    "build": "tsc --project tsconfig.demo.json && vite build",
     "lint": "eslint --ext .ts --ignore-path .gitignore --fix src",
     "format": "prettier . --write",
     "test": "jest src"

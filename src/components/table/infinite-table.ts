@@ -1,7 +1,7 @@
 import { LitElement, html } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { styleMap } from "lit-html/directives/style-map.js";
-import { TableColumn, TableFilter, TableRow, TableSort } from "./table";
+import { TableColumn, TableRow, defaultTableLabels } from "./table";
 import { styles } from "./table.styles";
 
 import "./pagination/pagination";
@@ -17,26 +17,20 @@ export class InfiniteTableComponent extends LitElement {
   @property({ type: Array })
   data: TableRow[];
 
-  @property({ type: Array })
-  dataIdField: keyof TableRow;
-
-  @property({ type: Array })
-  sortBy: TableSort[] = [];
-
-  @property({ type: Array })
-  filterBy: TableFilter[] = [];
-
   @property({ type: Object })
   scrollOptions?: IntersectionObserverInit;
 
   @property({ type: Object })
-  styles?: Record<string, string>;
+  styleInfo?: Record<string, string | number>;
 
   @property({ type: Object })
   columnStyles?: Record<string, string>;
 
   @property({ type: Object })
   cellStyles?: Record<string, string>;
+
+  @property({ type: Object })
+  labels = defaultTableLabels;
 
   @query("#bottom")
   bottom: Element;
@@ -56,16 +50,15 @@ export class InfiniteTableComponent extends LitElement {
       >
         <lit-spa-table
           .columns=${this.columns}
-          .sortBy=${this.sortBy}
-          .filterBy=${this.filterBy}
           .data=${this.data}
-          .styles=${this.styles}
+          .styleInfo=${this.styleInfo}
           .columnStyles=${{
             position: "sticky",
             top: 0,
             ...(this.columnStyles ?? {}),
           }}
           .cellStyles=${this.cellStyles}
+          .labels=${this.labels}
           @filterchange=${this.echoEvent}
           @clearfilter=${this.echoEvent}
           @sortchange=${this.echoEvent}

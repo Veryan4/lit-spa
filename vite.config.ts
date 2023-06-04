@@ -24,10 +24,12 @@ export default defineConfig((config) => {
           formats: ["es", "cjs"],
         },
         rollupOptions: {
-          external: /^lit/,
+          external: [/^lit/, 'demo/**'],
         },
+        exclude: ['demo/**'],
       },
       plugins: [dts()],
+      publicDir: false,
     };
   }
 

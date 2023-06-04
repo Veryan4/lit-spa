@@ -1,5 +1,5 @@
 import { LitElement, TemplateResult, html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit-html/directives/style-map.js";
 import { FilterComponent, defaultFilterLabels } from "./filter/filter";
 import { styles } from "./table.styles";
@@ -53,7 +53,7 @@ export class TableComponent extends LitElement {
   filterBy: TableFilter[] = [];
 
   @property({ type: Object })
-  styles?: Record<string, string>;
+  styleInfo?: Record<string, string | number>;
 
   @property({ type: Object })
   columnStyles?: Record<string, string>;
@@ -64,15 +64,12 @@ export class TableComponent extends LitElement {
   @property({ type: Object })
   labels = defaultTableLabels;
 
-  @state()
-  columnHeight?: number;
-
   render() {
     const styles = {
       "grid-template-columns": this.columns
         .map((col) => col.gridColumnSize ?? "1fr")
         .join(" "),
-      ...(this.styles ?? {}),
+      ...(this.styleInfo ?? {}),
     };
     const columns = this.formatColumns();
     return html`
@@ -90,7 +87,7 @@ export class TableComponent extends LitElement {
         })}
         ${this.data.map((row) =>
           this.columns.map((col) => {
-            let template = col.template ? col.template(col, row) : undefined;
+            let template = col.template ? col.template(col, row) as any : undefined;
             template = template?.cloneNode
               ? template.cloneNode(true)
               : template;
@@ -111,7 +108,6 @@ export class TableComponent extends LitElement {
       ? html`<lit-spa-filter
           id="${column.field}-filter"
           .column=${column}
-          .columnHeight=${this.columnHeight}
           .labels=${this.labels.filterLabels}
           @filterchange=${this.echoEvent}
           @clearfilter=${this.echoEvent}
@@ -132,11 +128,6 @@ export class TableComponent extends LitElement {
           @sortchange=${this.echoEvent}
         ></lit-spa-sort>`
       : "";
-  }
-
-  firstUpdated() {
-    this.columnHeight = this.shadowRoot?.querySelector(".column")?.clientHeight;
-    const ele = document.createElement("div");
   }
 
   echoEvent(event: CustomEvent) {

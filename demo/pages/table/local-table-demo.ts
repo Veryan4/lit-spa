@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { customElement } from "lit/decorators.js";
-import {SearchOperator, TableColumn, TableFilter, TableRow, TableSort, TranslationController} from "../../..";
-import "../../.."
+import {SearchOperator, TableColumn, TableFilter, TableRow, TableSort, TranslationController} from "../../demo-tools";
+import "../../demo-tools"
 import tableData from "./data.json"
 
 @customElement("demo-local-table")

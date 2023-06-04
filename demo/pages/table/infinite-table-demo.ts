@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { TableColumn, TableRow, TranslationController } from "../../..";
-import "../../.."
+import { TableColumn, TableRow, TranslationController } from "../../demo-tools";
+import "../../demo-tools"
 import tableData from "./data.json"
 
 @customElement("demo-infinite-table")

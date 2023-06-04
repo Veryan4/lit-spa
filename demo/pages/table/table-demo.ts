@@ -1,7 +1,7 @@
 import { LitElement, html, css, svg } from "lit";
 import { customElement } from "lit/decorators.js";
-import { TableColumn, TableRow, TranslationController } from "../../..";
-import "../../..";
+import { TableColumn, TableRow, TranslationController } from "../../demo-tools";
+import "../../demo-tools";
 import tableData from "./data.json";
 
 @customElement("demo-table")
@@ -54,7 +54,7 @@ class TablePageDemo extends LitElement {
     renderDate(column: TableColumn, row: TableRow) {
       const date = new Date(row[column.field]);
       const element = document.createElement('div');
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      const options: any = { year: 'numeric', month: 'long', day: 'numeric' };
       element.innerText = date.toLocaleDateString("en-US", options);
       return element;
   }

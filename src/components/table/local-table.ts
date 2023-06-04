@@ -69,7 +69,7 @@ export class LocalTableComponent extends LitElement {
   filterBy: TableFilter[] = [];
 
   @property({ type: Object })
-  styles?: Record<string, string>;
+  styleInfo?: Record<string, string | number>;
 
   @property({ type: Object })
   columnStyles?: Record<string, string>;
@@ -97,7 +97,7 @@ export class LocalTableComponent extends LitElement {
         .sortBy=${this.sortBy}
         .filterBy=${this.filterBy}
         .data=${this.query()}
-        .styles=${this.styles}
+        .styleInfo=${this.styleInfo}
         .columnStyles=${this.columnStyles}
         .cellStyles=${this.cellStyles}
         .labels=${this.labels.tableLabels}
