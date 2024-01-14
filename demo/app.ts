@@ -72,7 +72,7 @@ class LitApp extends LitElement {
             (route) =>
               html`<div
                 class="nav-item ${classMap({
-                  selected: this.router.activeRoute.name == route.name,
+                  selected: this.router.activeRoute?.name == route.name,
                 })}"
                 @click=${() => routerService.navigate(route.name)}
               >

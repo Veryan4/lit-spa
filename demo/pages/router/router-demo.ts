@@ -1,6 +1,6 @@
 import { LitElement, html} from "lit";
 import { customElement } from "lit/decorators.js";
-import { Route, RouteController } from "../../demo-tools";
+import { RouteController, Route, routerService } from "../../demo-tools";
 import "../../demo-tools";
 
 const routes: Route[] = [
@@ -25,6 +25,8 @@ class RouterDemo extends LitElement {
    render() {
     return html`
         <div class="body">
+            <button @click=${() => routerService.navigate('router/one')}>One</button>
+            <button @click=${() => routerService.navigate('router/two')}>Two</button>
             ${this.router.navigation()}
         </div>
     `;
