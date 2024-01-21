@@ -8,8 +8,6 @@ export const themeService = {
   THEME_EVENT,
 };
 
-let root: HTMLElement;
-
 let themes: Record<string, any> = {
   light: {
     "--primary-color": "#2c2c2c",
@@ -24,6 +22,7 @@ let themes: Record<string, any> = {
 };
 
 function setTheme(theme: Record<string, string>): void {
+  const root = document.querySelector(':root') as HTMLElement;
   Object.keys(theme).forEach((key) => root.style.setProperty(key, theme[key]));
 }
 
@@ -42,8 +41,7 @@ function changeTheme(newTheme: string): void {
   }
 }
 
-function registerThemes(rootHTML: HTMLElement, themesMap: Record<string, any>) {
-  root = rootHTML;
+function registerThemes(themesMap: Record<string, any>) {
   themes = themesMap;
   const initTheme = getTheme();
   if (themes.hasOwnProperty(initTheme)) {

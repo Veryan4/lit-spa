@@ -5,7 +5,9 @@ const TRANSLATION_LOADED_EVENT = "lit-spa-i18n-loaded";
 
 export const translateService = {
   useLanguage,
-  t,
+  translate,
+  formatNumber,
+  formatDate,
   initLanguage,
   loadTranslations,
   getLanguage,
@@ -15,9 +17,8 @@ export const translateService = {
 };
 
 const translationCache: any = {};
-const timeouts: any = {};
 
-async function useLanguage(lang: string, scope?: string): Promise<any> {
+async function useLanguage(lang: string): Promise<any> {
   const currentLang = getLanguage();
   if (currentLang === lang) return;
   if (!translationCache[lang]) {
@@ -29,63 +30,43 @@ async function useLanguage(lang: string, scope?: string): Promise<any> {
   );
 }
 
-function loadTranslations(lang: string, scope?: string, debounce = 100) {
-  const translationCacheKey = lang + scope;
-  clearTimeout(timeouts[translationCacheKey]);
-  timeouts[translationCacheKey] = setTimeout(async () => {
-    if (scope) {
-      if (!translationCache[lang][scope]) {
-        translationCache[lang][scope] = await fetch(
-          `/i18n/${scope}/${lang}.json`
-        ).then((res) => res.json());
-      }
-      window.dispatchEvent(
-        new CustomEvent(TRANSLATION_LOADED_EVENT, {
-          detail: {
-            lang,
-            scope,
-            translations: translationCache[lang][scope],
-            translationCacheKey,
-          },
-        })
-      );
-      return;
-    }
-    if (!translationCache[lang][NO_SCOPE_KEY]) {
-      translationCache[lang][NO_SCOPE_KEY] = await fetch(
-        `/i18n/${lang}.json`
-      ).then((res) => res.json());
-    }
+async function loadTranslations(lang: string, scope?: string) {
+  const translationCacheKey = lang + (scope ? scope : NO_SCOPE_KEY);
+  if (!translationCache[lang][translationCacheKey]) {
+    translationCache[lang][translationCacheKey] = await fetch(
+      `/i18n/${scope ? scope + "/" : ""}${lang}.json`
+    ).then((res) => res.json());
+  }
+  if (translationCache[lang][translationCacheKey]) {
     window.dispatchEvent(
       new CustomEvent(TRANSLATION_LOADED_EVENT, {
         detail: {
           lang,
           scope,
-          translations: translationCache[lang][NO_SCOPE_KEY],
+          translations: toTranslationMap(
+            translationCache[lang][translationCacheKey]
+          ),
           translationCacheKey,
         },
       })
     );
-  }, debounce);
+  }
 }
 
-function t(
-  record: string,
-  translations: any,
-  placeholders?: Record<string, string | number>
-): string {
-  const cleaned = record.replaceAll(":", ".");
-  let result = { ...translations };
-  try {
-    cleaned.split(".").forEach((key: string) => (result = result[key]));
-  } catch {
-    return record;
+function toTranslationMap(obj: Record<string, any>): Map<string, string> {
+  function walk(
+    into: Map<string, string>,
+    obj: Record<string, any>,
+    prefix: string[] = []
+  ) {
+    Object.entries(obj).forEach(([key, val]) => {
+      if (typeof val === "object") walk(into, val, [...prefix, key]);
+      else into.set([...prefix, key].join("."), val);
+    });
   }
-  if (!placeholders) return result;
-  return result.replace(/{\w+}/g, (all: string) => {
-    all = all.substring(1).slice(0, -1);
-    return placeholders[all] || all;
-  });
+  const out = new Map<string, string>();
+  walk(out, obj);
+  return out;
 }
 
 function initLanguage(): string {
@@ -114,4 +95,29 @@ function setLanguage(lang: string): void {
 function getLanguage(): string {
   const lang = localStorage.getItem(LANGUAGE_KEY);
   return lang ? lang : "en";
+}
+
+function translate(
+  record: string,
+  translations: Map<string, string>,
+  placeholders?: Record<string, string | number>
+): string {
+  const cleaned = record.replaceAll(":", ".");
+  const value = translations.get(cleaned);
+  if (!value) return record;
+  if (!placeholders) return value;
+  return value.replace(/{\w+}/g, (all: string) => {
+    all = all.substring(1).slice(0, -1);
+    return (placeholders[all] as any) || all;
+  });
+}
+
+function formatNumber(number: number, language: string, options?: Intl.NumberFormatOptions): string {
+  if (!options) return new Intl.NumberFormat(language).format(number);
+  return new Intl.NumberFormat(language, options).format(number);
+}
+
+function formatDate(date: Date, language: string, options?: Intl.DateTimeFormatOptions): string {
+  if (!options) return date.toLocaleDateString(language);
+  return date.toLocaleDateString(language, options);
 }

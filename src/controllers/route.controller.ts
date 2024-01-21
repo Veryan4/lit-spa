@@ -1,120 +1,75 @@
-import { ReactiveControllerHost, noChange, html } from "lit";
+import { ReactiveControllerHost, noChange } from "lit";
 import { ChildPart, DirectiveParameters, directive } from "lit/directive.js";
 import { AsyncDirective } from "lit/async-directive.js";
 import { Route } from "../models/route.model";
 import { routerService } from "../services";
-import "../components/loader/loader";
 
 class RouteDirective extends AsyncDirective {
-  private currentRoute: string;
+  private currentRoute?: string;
 
   update(part: ChildPart, [route]: DirectiveParameters<this>) {
     // target element can be accessed from part
     return this.render(route);
   }
 
-  render(route: Route) {
-    if (this.currentRoute === route.name) {
+  render(route?: Route) {
+    if (this.currentRoute === route?.name) {
       return noChange;
     }
-    this.currentRoute = route.name;
-    route.component().then((resolvedValue) => {
+    this.currentRoute = route?.name;
+    route?.component().then((resolvedValue) => {
       // Rendered asynchronously:
       this.setValue(resolvedValue);
     });
-    return html`<lit-spa-loader></lit-spa-loader>`;
+    return noChange;
   }
 }
 const routeDirective = directive(RouteDirective);
 
 export class RouteController {
   private host: ReactiveControllerHost;
+  private routerId: string;
 
-  activeRoute: Route;
+  activeRoute?: Route;
   pathParams: Record<string, any>;
   queryParams: Record<string, any>;
 
-  routes: Route[] = [];
 
   navigation() {
     return routeDirective(this.activeRoute);
   }
 
-  _changeRoute = (e?: CustomEvent) => {
-    const uri = decodeURI(window.location.pathname);
-    let nextRoute = this.routes.find((route) => {
-      if (Array.isArray(route.pattern)) {
-        return route.pattern.some(p => routerService.testRoute(uri, p))
-      } else {
-        return routerService.testRoute(uri, route.pattern)
-      }
-    });
-    if (!nextRoute) {
-      nextRoute = this.findRouteByPattern("*");
-    }
-    if (!nextRoute) {
-      return;
-    }
+  _changeRoute = (e: CustomEvent) => {
+    this.activeRoute = e.detail;
     this.queryParams = routerService.parseQueryParams();
-    if (!Array.isArray(nextRoute.pattern)) {
-      this.pathParams = routerService.parsePathParams(nextRoute.pattern, uri);
-    }
-    if (nextRoute.name === this.activeRoute.name) {
-      return;
-    }
-    if (!nextRoute.guard) {
-      this.activeRoute = nextRoute;
+    if (this.activeRoute) {
+      const uri = decodeURI(window.location.pathname);
+      if (!Array.isArray(this.activeRoute.pattern)) {
+        this.pathParams = routerService.parsePathParams(this.activeRoute.pattern, uri);
+      }
       this.host.requestUpdate();
-      return;
     }
-    nextRoute
-      .guard()
-      .then(() => {
-        this.activeRoute = nextRoute!;
-        this.host.requestUpdate();
-      })
-      .catch((errorRoute) => {
-        const errRoute = this.findRouteByPattern(errorRoute);
-        if (errRoute) {
-          this.activeRoute = errRoute;
-          window.history.pushState({}, "", errRoute.name);
-          this.host.requestUpdate();
-        }
-      });
   };
 
   constructor(host: ReactiveControllerHost, routes: Route[]) {
+    this.routerId = routerService.registerRoutes(routes);
     this.host = host;
-    this.routes = routes;
-    const homeRoute = this.findRouteByPattern("");
-    if (homeRoute) {
-      this.activeRoute = homeRoute;
-    }
     host.addController(this);
-    this._changeRoute();
   }
 
   hostConnected() {
     window.addEventListener(
-      routerService.ROUTE_EVENT,
+      routerService.ROUTE_EVENT + '_' + this.routerId,
       this._changeRoute as EventListener
     );
+    routerService.refresh();
   }
 
   hostDisconnected() {
     window.removeEventListener(
-      routerService.ROUTE_EVENT,
+      routerService.ROUTE_EVENT + '_' + this.routerId,
       this._changeRoute as EventListener
     );
-  }
-
-  findRouteByPattern(pattern: string){
-    return this.routes.find((route) => {
-      if (Array.isArray(route.pattern)) {
-        return route.pattern.some(p => p === pattern)
-      } else {
-        return route.pattern === pattern;
-      }
-    });
+    routerService.unregisterRoutes(this.routerId);
   }
 }

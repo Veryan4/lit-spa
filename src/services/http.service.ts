@@ -1,6 +1,6 @@
 const AUTH_TOKEN_KEY = "lit-spa-auth-token";
-
-import { routerService } from "./router.service";
+const TIME_CACHED_IN_MINUTES = 5;
+const cache = new Map<string, { expires: Date, value: Promise<Response> }>();
 
 export const httpService = {
   get,
@@ -11,16 +11,17 @@ export const httpService = {
   removeAuthToken,
   setAuthToken,
   getAuthToken,
+  createHeaders,
+  createBody,
+  baseHttp,
+  cachedHttp,
+  cleanCache
 };
 
-function baseHttp<T>(url: string, options?: RequestInit): Promise<T> {
-  return fetch(url, options).then((response) => {
-    if (response.status == 401 || response.status == 403) {
-      removeAuthToken();
-      routerService.navigate("/login");
-      throw new Error("Unauthorized");
-    }
+setInterval(() => httpService.cleanCache(), TIME_CACHED_IN_MINUTES * 1000 * 60);
 
+function baseHttp<T>(url: string, options?: RequestInit, bustCache = false): Promise<T> {
+  return httpService.cachedHttp(url, options, bustCache).then((response) => {
     if (!response.ok) {
       throw new Error(response.statusText);
     }
@@ -28,45 +29,45 @@ function baseHttp<T>(url: string, options?: RequestInit): Promise<T> {
   });
 }
 
-function get<T>(url: string): Promise<T> {
-  return baseHttp(url, {
+function get<T>(url: string, bustCache = false): Promise<T> {
+  return httpService.baseHttp(url, {
     method: "GET",
-    headers: createHeaders(),
-  });
+    headers: httpService.createHeaders(),
+  }, bustCache);
 }
 
-function put<T>(url: string, data: any | FormData): Promise<T> {
+function put<T>(url: string, data: any | FormData, bustCache = false): Promise<T> {
   const isFormData = data instanceof FormData;
-  return baseHttp(url, {
+  return httpService.baseHttp(url, {
     method: "PUT",
-    headers: createHeaders(isFormData),
-    body: createBody(data, isFormData),
-  });
+    headers: httpService.createHeaders(isFormData),
+    body: httpService.createBody(data, isFormData),
+  }, bustCache);
 }
 
-function post<T>(url: string, data: any): Promise<T> {
+function post<T>(url: string, data: any, bustCache = false): Promise<T> {
   const isFormData = data instanceof FormData;
-  return baseHttp(url, {
+  return httpService.baseHttp(url, {
     method: "POST",
-    headers: createHeaders(isFormData),
-    body: createBody(data, isFormData),
-  });
+    headers: httpService.createHeaders(isFormData),
+    body: httpService.createBody(data, isFormData),
+  }, bustCache);
 }
 
-function patch<T>(url: string, data: any | FormData): Promise<T> {
+function patch<T>(url: string, data: any | FormData, bustCache = false): Promise<T> {
   const isFormData = data instanceof FormData;
-  return baseHttp(url, {
+  return httpService.baseHttp(url, {
     method: "PATCH",
-    headers: createHeaders(isFormData),
-    body: createBody(data, isFormData),
-  });
+    headers: httpService.createHeaders(isFormData),
+    body: httpService.createBody(data, isFormData),
+  }, bustCache);
 }
 
-function del<T>(url: string): Promise<T> {
-  return baseHttp(url, {
+function del<T>(url: string, bustCache = false): Promise<T> {
+  return httpService.baseHttp(url, {
     method: "DELETE",
-    headers: createHeaders(),
-  });
+    headers: httpService.createHeaders(),
+  }, bustCache);
 }
 
 function createHeaders(isFormData?: boolean) {
@@ -99,4 +100,26 @@ function setAuthToken(token: string): void {
 
 function getAuthToken(): string | null {
   return localStorage.getItem(AUTH_TOKEN_KEY);
+}
+
+function cachedHttp(url: string, options?: RequestInit, bustCache = false): Promise<Response> {
+  const cacheKey = JSON.stringify({url, options});
+  const item = cache.get(cacheKey);
+  let call = item && new Date() < item.expires ? item.value : false;
+  if (!call || bustCache) {
+    call = fetch(url, options);
+    const expires = new Date();
+    expires.setMinutes(expires.getMinutes() + TIME_CACHED_IN_MINUTES);
+    cache.set(cacheKey, {expires, value: call});
+  }
+  return call.then(r => r.clone());
+}
+
+function cleanCache() {
+  const now = new Date();
+  cache.forEach((value, key) => {
+    if(value.expires < now){
+      cache.delete(key);
+    }
+  });
 }

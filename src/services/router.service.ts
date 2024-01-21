@@ -1,25 +1,40 @@
-const ROUTE_EVENT = "lit-spa-route-update";
+import { Route } from "../models";
 
-window.onpopstate = () => {
-  window.dispatchEvent(new CustomEvent(ROUTE_EVENT));
-};
+const ROUTE_EVENT = "lit-spa-route-update";
+const ROUTE_ROOT = "root";
 
 export const routerService = {
-  parseQuery,
+  refresh,
+  parseQueryString,
   parsePathParams,
-  patternToRegExp,
-  testRoute,
-  navigate,
   parseQueryParams,
+  navigate,
+  registerRoutes,
+  unregisterRoutes,
   ROUTE_EVENT,
 };
 
-function navigate(href: string): void {
-  window.history.pushState({}, "", href);
-  window.dispatchEvent(new CustomEvent(ROUTE_EVENT));
+class RouteMap extends Route {
+  children?: { [routerId: string]: RouteMap[] };
+}
+let routes: RouteMap[] = [];
+let nextRouterId = 0;
+
+window.onpopstate = () => {
+  refresh();
+};
+
+function refresh() {
+  const uri = decodeURI(window.location.pathname);
+  changeRoute(routes, uri);
 }
 
-function parseQuery(querystring: string): any {
+function navigate(href: string): void {
+  window.history.pushState({}, "", href);
+  refresh();
+}
+
+function parseQueryString(querystring: string): any {
   return querystring
     ? JSON.parse(
         '{"' +
@@ -31,14 +46,8 @@ function parseQuery(querystring: string): any {
 
 function parsePathParams(pattern: string, uri: string): Record<string, string> {
   const params: Record<string, string> = {};
-
-  const patternArray = pattern.split("/").filter((path) => {
-    return path != "";
-  });
-  const uriArray = uri.split("/").filter((path) => {
-    return path != "";
-  });
-
+  const patternArray = pattern.split("/").filter((path) => path != "");
+  const uriArray = uri.split("/").filter((path) => path != "");
   patternArray.map((pattern: string, i: number) => {
     if (/^:/.test(pattern)) {
       params[pattern.substring(1)] = uriArray[i];
@@ -64,7 +73,7 @@ function patternToRegExp(pattern: string): RegExp {
           /:[^\s/]+/g,
           "([\\w\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]+)"
         ) +
-        "(|/)$"
+        "(|/)"
     );
   } else {
     return new RegExp("(^$|^/$)");
@@ -73,7 +82,146 @@ function patternToRegExp(pattern: string): RegExp {
 
 function testRoute(uri: string, patterns: string | string[]): boolean | void {
   if (typeof patterns == "string") {
-    patterns = [patterns]
-  } 
-  return patterns.some(pattern => patternToRegExp(pattern).test(uri))
+    patterns = [patterns];
+  }
+  return patterns.some((pattern) => patternToRegExp(pattern).test(uri));
+}
+
+function registerRoutes(newRoutes: Route[]) {
+  const uri = decodeURI(window.location.pathname);
+  if (nextRouterId) {
+    const parentRoute = findParentRouteInRouteMap(routes, uri);
+    if (parentRoute) {
+      const routerId = nextRouterId;
+      parentRoute.children = {
+        [routerId]: [...newRoutes],
+      };
+      nextRouterId += 1;
+      return String(routerId);
+    }
+  }
+  nextRouterId += 1;
+  routes = [...routes, ...newRoutes];
+  return ROUTE_ROOT;
+}
+
+function unregisterRoutes(routerId: string, oldRoutes = routes): boolean {
+  if (routerId === ROUTE_ROOT) {
+    return false;
+  }
+  return oldRoutes.some(route => {
+    if (route.children) {
+      if (route.children[routerId]) {
+        delete route.children[routerId];
+        return true;
+      }
+      return Object.keys(route.children).some((key) => {
+        return unregisterRoutes(routerId, route.children![key]);
+      });
+    }
+    return false;
+  });
+}
+
+function findParentRouteInRouteMap(
+  searchRoutes: RouteMap[],
+  searchString: string
+) {
+  const parentRoute = findRoute(searchRoutes, searchString);
+  if (parentRoute?.children) {
+    let newParent: RouteMap | undefined;
+    if (Array.isArray(parentRoute.pattern)) {
+      parentRoute.pattern.forEach((p) => searchString.replace(p, ""));
+    } else {
+      searchString.replace(parentRoute.pattern, "");
+    }
+    Object.keys(parentRoute.children).find((key) => {
+      const childRoutes = parentRoute.children![key];
+      const found = findParentRouteInRouteMap(childRoutes, searchString);
+      if (found) {
+        newParent = found;
+        return true;
+      }
+      return false;
+    });
+    if (newParent) {
+      return newParent;
+    }
+  }
+  return parentRoute;
+}
+
+function findRoute(searchRoutes: RouteMap[], searchString: string) {
+  return searchRoutes.find((route) => {
+    if (Array.isArray(route.pattern)) {
+      return route.pattern.some((p) => testRoute(searchString, p));
+    } else {
+      return testRoute(searchString, route.pattern);
+    }
+  });
+}
+
+function changeRoute(
+  routeMap: RouteMap[],
+  searchString: string,
+  routerId = ROUTE_ROOT
+) {
+  let nextRoute = findRoute(routeMap, searchString);
+  if (!nextRoute) {
+    nextRoute = findRoute(routeMap, "*");
+  }
+  if (!nextRoute) {
+    return;
+  }
+  if (!nextRoute.guard) {
+    window.dispatchEvent(
+      new CustomEvent(ROUTE_EVENT + "_" + routerId, {
+        detail: nextRoute,
+      })
+    );
+    triggerChildRouteChange(nextRoute!, searchString);
+    return;
+  }
+  nextRoute
+    .guard()
+    .then(() => {
+      window.dispatchEvent(
+        new CustomEvent(ROUTE_EVENT + "_" + routerId, {
+          detail: nextRoute,
+        })
+      );
+      triggerChildRouteChange(nextRoute!, searchString);
+    })
+    .catch((errorRoute) => {
+      const errRoute = findRoute(routeMap, errorRoute);
+      if (errRoute) {
+        window.history.pushState({}, "", errRoute.name);
+        window.dispatchEvent(
+          new CustomEvent(ROUTE_EVENT + "_" + routerId, {
+            detail: errRoute,
+          })
+        );
+      }
+    });
+}
+
+function triggerChildRouteChange(route: RouteMap, searchString: string) {
+  if (route?.children) {
+    if (Array.isArray(route.pattern)) {
+      route.pattern.forEach((p) =>
+      searchString = searchString.replace(new RegExp("^(|/)" + p), "")
+      );
+    } else {
+      searchString = searchString.replace(new RegExp("^(|/)" + route.pattern), "");
+    }
+    Object.keys(route.children).find((key) => {
+      const childRoutes = route!.children![key];
+      const found = findRoute(childRoutes, searchString);
+      if (found) {
+        changeRoute(childRoutes, searchString, key);
+        return true;
+      }
+      return false;
+    });
+  }
 }

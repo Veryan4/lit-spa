@@ -6,7 +6,6 @@ export const styles = css`
   }
 
   .loader {
-    height: 88vh;
     display: flex;
     flex-direction: column;
     justify-content: center;

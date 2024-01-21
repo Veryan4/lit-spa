@@ -1,6 +1,6 @@
 {
   "name": "@veryan/lit-spa",
-  "version": "0.1.4",
+  "version": "0.2.1",
   "license": "MIT",
   "description": "A lib for using lit.dev as an Single Page Application",
   "author": "Veryan Goodship",
@@ -20,35 +20,51 @@
     "typescript",
     "spa"
   ],
-  "main": "./dist/lit-spa.cjs",
-  "module": "./dist/lit-spa.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/lib/lit-spa.cjs",
+  "module": "./dist/lib/lit-spa.js",
+  "types": "./dist/lib/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/lit-spa.js",
-      "require": "./dist/lit-spa.cjs"
+      "import": "./dist/lib/lit-spa.js",
+      "require": "./dist/lib/lit-spa.cjs"
     }
   },
   "files": [
-    "dist"
+    "dist/lib"
   ],
   "scripts": {
-    "build": "tsc && vite build",
+    "dev": "vite --mode=dev",
+    "build-lib": "tsc --project tsconfig.lib.json && vite build --mode lib",
+    "build": "tsc --project tsconfig.demo.json && vite build",
     "lint": "eslint --ext .ts --ignore-path .gitignore --fix src",
     "format": "prettier . --write",
     "test": "jest src"
   },
   "devDependencies": {
-    "@types/jest": "27.0.1",
+    "@types/jest": "29.5.11",
     "@types/node": "^18.11.18",
-    "jest": "27.1.0",
-    "prettier": "2.3.2",
-    "ts-jest": "27.0.5",
-    "typescript": "4.3.2",
-    "vite": "4.0.4",
-    "vite-plugin-dts": "^1.7.1"
+    "@typescript-eslint/eslint-plugin": "6.19.0",
+    "@typescript-eslint/parser": "6.19.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-lit": "^1.11.0",
+    "eslint-plugin-wc": "^2.0.4",
+    "jest": "29.7.0",
+    "prettier": "3.2.2",
+    "ts-jest": "29.1.1",
+    "typescript": "5.3.3",
+    "vite": "5.0.11",
+    "vite-plugin-dts": "3.7.1",
+    "@web/rollup-plugin-copy": "0.5.1",
+    "@web/rollup-plugin-html": "2.1.2",
+    "rollup-plugin-minify-html-literals": "1.2.6",
+    "rollup-plugin-summary": "2.0.0",
+    "@rollup/plugin-terser": "0.4.4",
+    "@rollup/plugin-node-resolve": "15.2.3",
+    "vite-plugin-compression": "^0.5.1",
+    "vite-plugin-eslint": "^1.8.1"
   },
   "dependencies": {
-    "lit": "2.6.1"
+    "lit": "3.1.1"
   }
 }

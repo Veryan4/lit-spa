@@ -1,37 +1,43 @@
 import { LitElement, html } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement } from "lit/decorators.js";
 import { classMap } from "lit-html/directives/class-map.js";
+import { styleMap } from "lit-html/directives/style-map.js";
+import { asyncAppend } from "lit/directives/async-append.js";
 import { until } from "lit/directives/until.js";
+import { TranslationController } from "../../controllers";
+import { toastService } from "../../services";
 import { Toast } from "../../models";
-import { translateService } from "../../services";
 import { styles } from "./toast.styles";
 
 @customElement("lit-spa-toast")
 export class ToastComponent extends LitElement {
   static styles = [styles];
 
-  @property({ type: Object })
-  toast: Toast;
+  private i18n = new TranslationController(this);
 
   constructor() {
     super();
   }
 
   render() {
-    const wait = new Promise((res) =>
-      setTimeout(() => res(""), this.toast.duration)
-    );
-    const classes = { error: this.toast.type === "error" };
-    return until(
-      wait,
-      html` <div class="toast-container">
-        <div class="toast ${classMap(classes)}">
-          <div class="toast-wrap">
-            ${translateService.t(this.toast.key, this.toast.properties)}
-          </div>
-        </div>
-      </div>`
-    );
+    return html`<div class="toast-container">
+      ${asyncAppend(toastService.pop, (t) => {
+        const toast = t as Toast;
+        const classes = { error: toast?.type === "error" };
+        return until(
+          this.wait(toast.duration),
+          html`<div class="toast ${classMap(classes)}">
+            <div class="toast-wrap" style=${styleMap(toast?.styleInfo ?? {})}>
+              ${this.i18n.t(toast.text, toast.properties)}
+            </div>
+          </div>`
+        );
+      })}
+    </div>`;
+  }
+
+  wait(duration: number) {
+    return new Promise((res) => setTimeout(() => res(""), duration));
   }
 }
 
