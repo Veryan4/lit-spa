@@ -1,3 +1,5 @@
+import { httpService } from "./http.service";
+
 const LANGUAGE_KEY = "lit-spa-lang";
 const NO_SCOPE_KEY = "lit-spa-no-scope";
 const LANGUAGE_CHANGE_EVENT = "lit-spa-lang-update";
@@ -33,9 +35,9 @@ async function useLanguage(lang: string): Promise<any> {
 async function loadTranslations(lang: string, scope?: string) {
   const translationCacheKey = lang + (scope ? scope : NO_SCOPE_KEY);
   if (!translationCache[lang][translationCacheKey]) {
-    translationCache[lang][translationCacheKey] = await fetch(
+    translationCache[lang][translationCacheKey] = await httpService.get(
       `/i18n/${scope ? scope + "/" : ""}${lang}.json`
-    ).then((res) => res.json());
+    );
   }
   if (translationCache[lang][translationCacheKey]) {
     window.dispatchEvent(

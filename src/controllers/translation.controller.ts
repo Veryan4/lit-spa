@@ -15,7 +15,7 @@ export class TranslationController {
   translations = new Map<string, string>();
   translationCacheKey: string;
 
-  loadTranslations: (...args: any) => any = translateService.loadTranslations;
+  loadTranslations: (language:string, scope?: string) => any = translateService.loadTranslations;
   hasLoadedTranslations = false;
 
   t(
@@ -78,7 +78,7 @@ export class TranslationController {
     host.addController(this);
   }
 
-  async hostConnected() {
+  hostConnected() {
     window.addEventListener(
       translateService.LANGUAGE_CHANGE_EVENT,
       this._changeLanguage as EventListener
