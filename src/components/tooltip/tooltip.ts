@@ -73,6 +73,7 @@ export class ToolTipComponent extends LitElement {
         id="reference"
         class="${classMap({ default: this.text })}"
         @click=${this.openFloating}
+        @mouseover=${this.openHover}
       >
         ${this.text
           ? html`<slot></slot>`
@@ -124,6 +125,14 @@ export class ToolTipComponent extends LitElement {
     setTimeout(() => {
       if (this.mode == "click") {
         this.isOpen = true;
+        this.assignFloatingPosition();
+      }
+    });
+  }
+
+  openHover() {
+    setTimeout(() => {
+      if (this.mode == "hover") {
         this.assignFloatingPosition();
       }
     });
