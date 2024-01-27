@@ -20,10 +20,10 @@ class TooltipDemo extends LitElement {
   render() {
     return html`
       <div class="wrap">
-        <lit-spa-tooltip .position=${"bottom"} .text=${"hello"}>
+        <lit-spa-tooltip .position=${"right"} .text=${"hello"}>
           Simple pre-styled demo
         </lit-spa-tooltip>
-        <lit-spa-tooltip .position=${"bottom"} .mode=${"click"}>
+        <lit-spa-tooltip .position=${"top"} .mode=${"click"}>
           <div slot="reference">Click me!</div>
           <div slot="floating">I am Open ${this.renderSVG()}</div>
         </lit-spa-tooltip>

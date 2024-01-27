@@ -10,7 +10,8 @@ import { classMap } from "lit-html/directives/class-map.js";
 import { styleMap } from "lit-html/directives/style-map.js";
 import { styles } from "./tooltip.styles";
 
-export type TooltipPosition = "top"
+export type TooltipPosition =
+  | "top"
   | "top-start"
   | "top-end"
   | "right"
@@ -68,8 +69,7 @@ export class ToolTipComponent extends LitElement {
   }
 
   render() {
-    return html` 
-    <div
+    return html` <div
         id="reference"
         class="${classMap({ default: this.text })}"
         @click=${this.openFloating}
@@ -91,6 +91,7 @@ export class ToolTipComponent extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+    this.assignFloatingPosition();
     if (this.mode == "click") {
       window.addEventListener("click", (e) => this._clickEventHandler(e));
     }
@@ -136,7 +137,7 @@ export class ToolTipComponent extends LitElement {
         this.referenceElement,
         floating,
         placement,
-        this.strategy
+        this.strategy,
       );
       const x = this.positionX ?? position.x + this.offsetX;
       const y = this.positionY ?? position.y + this.offsetY;
@@ -155,7 +156,7 @@ export class ToolTipComponent extends LitElement {
     reference: HTMLElement,
     floating: HTMLElement,
     placement = "bottom",
-    strategy = "absolute"
+    strategy = "absolute",
   ) {
     const isRTL = getComputedStyle(floating).direction === "rtl";
     const rects = this.getElementRects(reference, floating, strategy);
@@ -172,7 +173,7 @@ export class ToolTipComponent extends LitElement {
       [key: string]: { width: number; height: number; x: number; y: number };
     },
     placement: string,
-    rtl?: boolean
+    rtl?: boolean,
   ): { x: number; y: number } {
     const { reference, floating } = rects;
     const commonX = reference.x + reference.width / 2 - floating.width / 2;
@@ -218,13 +219,13 @@ export class ToolTipComponent extends LitElement {
   getElementRects(
     reference: HTMLElement,
     floating: HTMLElement,
-    strategy: string
+    strategy: string,
   ) {
     return {
       reference: this.getRectRelativeToOffsetParent(
         reference,
         floating.offsetParent as HTMLElement,
-        strategy
+        strategy,
       ),
       floating: {
         width: floating.offsetWidth,
@@ -238,12 +239,12 @@ export class ToolTipComponent extends LitElement {
   getRectRelativeToOffsetParent(
     element: HTMLElement,
     offsetParent: HTMLElement,
-    strategy: string
+    strategy: string,
   ) {
     const rect = this.getElementsBoundingClientRect(
       element,
       this.isScaled(offsetParent),
-      strategy === "fixed"
+      strategy === "fixed",
     );
 
     const offsets = { x: 0, y: 0 };
@@ -262,7 +263,7 @@ export class ToolTipComponent extends LitElement {
   getElementsBoundingClientRect(
     element: HTMLElement,
     includeScale = false,
-    isFixedStrategy = false
+    isFixedStrategy = false,
   ) {
     const clientRect = element.getBoundingClientRect();
 
@@ -337,9 +338,10 @@ export class ToolTipComponent extends LitElement {
   isOutOfBounds(element: HTMLElement): boolean {
     const rects = element.getBoundingClientRect();
     return (
-      rects.x < 0 || rects.y < 0 ||
+      rects.x < 0 ||
+      rects.y < 0 ||
       rects.x + rects.width > window.innerWidth ||
-      rects.y + rects.height > window.innerHeight 
+      rects.y + rects.height > window.innerHeight
     );
   }
 }
