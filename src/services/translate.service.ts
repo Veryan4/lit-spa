@@ -3,7 +3,6 @@ import { httpService } from "./http.service";
 const LANGUAGE_KEY = "lit-spa-lang";
 const NO_SCOPE_KEY = "lit-spa-no-scope";
 const LANGUAGE_CHANGE_EVENT = "lit-spa-lang-update";
-const TRANSLATION_LOADED_EVENT = "lit-spa-i18n-loaded";
 
 export const translateService = {
   useLanguage,
@@ -14,8 +13,7 @@ export const translateService = {
   loadTranslations,
   getLanguage,
   NO_SCOPE_KEY,
-  LANGUAGE_CHANGE_EVENT,
-  TRANSLATION_LOADED_EVENT,
+  LANGUAGE_CHANGE_EVENT
 };
 
 const translationCache: any = {};
@@ -35,24 +33,12 @@ async function useLanguage(lang: string): Promise<any> {
 async function loadTranslations(lang: string, scope?: string) {
   const translationCacheKey = lang + (scope ? scope : NO_SCOPE_KEY);
   if (!translationCache[lang][translationCacheKey]) {
-    translationCache[lang][translationCacheKey] = await httpService.get(
+    const translations: Record<string, any> = await httpService.get(
       `/i18n/${scope ? scope + "/" : ""}${lang}.json`
     );
+    translationCache[lang][translationCacheKey] = toTranslationMap(translations);
   }
-  if (translationCache[lang][translationCacheKey]) {
-    window.dispatchEvent(
-      new CustomEvent(TRANSLATION_LOADED_EVENT, {
-        detail: {
-          lang,
-          scope,
-          translations: toTranslationMap(
-            translationCache[lang][translationCacheKey]
-          ),
-          translationCacheKey,
-        },
-      })
-    );
-  }
+  return translationCache[lang][translationCacheKey];
 }
 
 function toTranslationMap(obj: Record<string, any>): Map<string, string> {

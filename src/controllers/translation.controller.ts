@@ -13,8 +13,6 @@ export class TranslationController {
   language = translateService.initLanguage();
   scope?: string;
   translations = new Map<string, string>();
-  translationCacheKey: string;
-
   loadTranslations: (language:string, scope?: string) => any = translateService.loadTranslations;
   hasLoadedTranslations = false;
 
@@ -52,30 +50,11 @@ export class TranslationController {
     );
   }
 
-  _changeLanguage = (e: CustomEvent) => {
-    if (this.language !== e.detail.lang) {
-      this.language = e.detail.lang;
-      this.loadTranslations(this.language, this.scope);
-    }
-  };
-
-  _translationLoaded = (e: CustomEvent) => {
-    if (
-      this.language === e.detail.lang &&
-      this.scope === e.detail.scope &&
-      this.translationCacheKey !== e.detail.translationCacheKey
-    ) {
-      this.translationCacheKey = e.detail.translationCacheKey;
-      this.translations = e.detail.translations;
-      this.hasLoadedTranslations = true;
-      this.host.requestUpdate();
-    }
-  };
-
   constructor(host: ReactiveControllerHost, scope?: string) {
     this.host = host;
     this.scope = scope;
     host.addController(this);
+    this.processLoad();
   }
 
   hostConnected() {
@@ -83,11 +62,6 @@ export class TranslationController {
       translateService.LANGUAGE_CHANGE_EVENT,
       this._changeLanguage as EventListener
     );
-    window.addEventListener(
-      translateService.TRANSLATION_LOADED_EVENT,
-      this._translationLoaded as EventListener
-    );
-    this.loadTranslations(this.language, this.scope);
   }
 
   hostDisconnected() {
@@ -95,10 +69,19 @@ export class TranslationController {
       translateService.LANGUAGE_CHANGE_EVENT,
       this._changeLanguage as EventListener
     );
-    window.removeEventListener(
-      translateService.TRANSLATION_LOADED_EVENT,
-      this._translationLoaded as EventListener
-    );
+  }
+
+  _changeLanguage = (e: CustomEvent) => {
+    if (this.language !== e.detail.lang) {
+      this.language = e.detail.lang;
+      this.processLoad();
+    }
+  };
+
+  async processLoad() {
+    this.translations = await this.loadTranslations(this.language, this.scope);
+    this.hasLoadedTranslations = true;
+    this.host.requestUpdate();
   }
 }
 
