@@ -52,7 +52,7 @@ class HomePage extends LitElement {
           </li>
           <li>
             <div class="example">
-              <div><a href="https://d-rummy.com" target="_blank" rel="noopener noreferrer">D-Rummy</a></div>
+              <div><a href="https://rummy.veryan.ca" target="_blank" rel="noopener noreferrer">D-Rummy</a></div>
               <a href="https://github.com/Veryan4/d-rummy" target="_blank" rel="noopener noreferrer">${this.githubSVG()}</a>
             </div>
           </li>

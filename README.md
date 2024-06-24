@@ -10,7 +10,7 @@ Websites built with the framework:
   
   Repo: https://github.com/Veryan4/truba
 
-- Website: https://d-rummy.com
+- Website: https://rummy.veryan.ca
   
   Repo: https://github.com/Veryan4/d-rummy
 
