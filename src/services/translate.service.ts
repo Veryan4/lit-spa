@@ -60,6 +60,9 @@ function toTranslationMap(obj: Record<string, any>): Map<string, string> {
 function initLanguage(supportedLanguages?: string[]): string {
   const lang = localStorage.getItem(LANGUAGE_KEY);
   if (lang) {
+    if (!translationCache.hasOwnProperty(lang)) {
+      translationCache[lang] = {};
+    }
     return lang;
   }
   if (navigator.language) {

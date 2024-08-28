@@ -1,6 +1,6 @@
 {
   "name": "@veryan/lit-spa",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "license": "MIT",
   "description": "A lib for using lit.dev as an Single Page Application",
   "author": "Veryan Goodship",
@@ -20,13 +20,13 @@
     "typescript",
     "spa"
   ],
-  "main": "./dist/lib/lit-spa.cjs",
+  "main": "./dist/lib/lit-spa.js",
   "module": "./dist/lib/lit-spa.js",
   "types": "./dist/lib/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/lib/lit-spa.js",
-      "require": "./dist/lib/lit-spa.cjs"
+      "require": "./dist/lib/lit-spa.js"
     }
   },
   "files": [
