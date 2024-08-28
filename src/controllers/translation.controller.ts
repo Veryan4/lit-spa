@@ -8,9 +8,14 @@ import {
 } from "lit/directive.js";
 import { translateService } from "../services";
 
+export class TranslationControllerOptions {
+  scope?: string;
+  supportedLanguages?: string[];
+}
+
 export class TranslationController {
   private host: ReactiveControllerHost;
-  language = translateService.initLanguage();
+  language: string;
   scope?: string;
   translations = new Map<string, string>();
   loadTranslations: (language:string, scope?: string) => any = translateService.loadTranslations;
@@ -50,9 +55,10 @@ export class TranslationController {
     );
   }
 
-  constructor(host: ReactiveControllerHost, scope?: string) {
+  constructor(host: ReactiveControllerHost, options?: TranslationControllerOptions) {
     this.host = host;
-    this.scope = scope;
+    this.scope = options?.scope;
+    this.language = translateService.initLanguage(options?.supportedLanguages);
     host.addController(this);
     this.processLoad();
   }

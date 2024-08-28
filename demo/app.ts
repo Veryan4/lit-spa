@@ -1,6 +1,6 @@
 import { LitElement, html, css, PropertyValueMap } from "lit";
 import { customElement } from "lit/decorators.js";
-import { classMap } from "lit-html/directives/class-map.js";
+import { classMap } from "lit/directives/class-map.js";
 import {
   RouteController,
   TranslationController,
@@ -69,7 +69,7 @@ class LitApp extends LitElement {
   ];
 
   private router = new RouteController(this, routes);
-  private i18n = new TranslationController(this);
+  private i18n = new TranslationController(this, {supportedLanguages: ['en', 'fr']});
 
   render() {
     return html`

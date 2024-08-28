@@ -1,6 +1,6 @@
 import { LitElement, TemplateResult, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { styleMap } from "lit-html/directives/style-map.js";
+import { styleMap } from "lit/directives/style-map.js";
 import { FilterComponent, defaultFilterLabels } from "./filter/filter";
 import { styles } from "./table.styles";
 

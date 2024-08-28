@@ -21,7 +21,7 @@ export default defineConfig((config) => {
           name: "lit-spa",
           fileName: "lit-spa",
           entry: r(__dirname, "src/index.ts"),
-          formats: ["es", "cjs"],
+          formats: ["es"],
         },
         rollupOptions: {
           external: [/^lit/, 'demo/**'],

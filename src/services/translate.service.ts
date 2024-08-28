@@ -57,26 +57,26 @@ function toTranslationMap(obj: Record<string, any>): Map<string, string> {
   return out;
 }
 
-function initLanguage(): string {
+function initLanguage(supportedLanguages?: string[]): string {
   const lang = localStorage.getItem(LANGUAGE_KEY);
   if (lang) {
-    translationCache[lang] = {};
     return lang;
   }
   if (navigator.language) {
     const browserLang = navigator.language.substring(0, 2);
-    translationCache[browserLang] = {};
-    return browserLang;
+    if (supportedLanguages?.includes(browserLang)) {
+      setLanguage(browserLang);
+      return browserLang;
+    }
   }
-  translationCache["en"] = {};
+  setLanguage("en");
   return "en";
 }
 
 function setLanguage(lang: string): void {
-  if (!lang) {
-    return;
+  if (!translationCache.hasOwnProperty(lang)) {
+    translationCache[lang] = {};
   }
-  localStorage.removeItem(LANGUAGE_KEY);
   localStorage.setItem(LANGUAGE_KEY, lang);
 }
 

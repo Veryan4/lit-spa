@@ -1,6 +1,6 @@
 import { LitElement, html, svg } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { styleMap } from "lit-html/directives/style-map.js";
+import { styleMap } from "lit/directives/style-map.js";
 import { styles } from "./loader.styles";
 
 @customElement("lit-spa-loader")
