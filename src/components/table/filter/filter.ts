@@ -57,12 +57,12 @@ export class FilterComponent extends LitElement {
           ${this.condition == "EQUAL"
             ? html` <ul style="margin:0;">
                   ${this.selectedOptions.map(
-                    (option) => html`<li>${option}</li>`
+                    (option) => html`<li>${option}</li>`,
                   )}
                 </ul>
                 <datalist id="options">
                   ${this.options.map(
-                    (option) => html`<option value=${option}></option>`
+                    (option) => html`<option value=${option}></option>`,
                   )}
                 </datalist>`
             : ""}

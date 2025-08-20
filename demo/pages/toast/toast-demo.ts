@@ -5,7 +5,6 @@ import "../../demo-tools";
 
 @customElement("toast-demo")
 class ToastDemo extends LitElement {
-
   render() {
     return html`
       <div class="body">

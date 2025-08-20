@@ -1,11 +1,16 @@
 {
-    "extends": "./tsconfig.json",
-    "compilerOptions": {
-        "paths": {
-          "/@/*": ["src/*", "demo/*"]
-        }
-      },
-    "include": ["src/**/*.ts", "demo/**/*.ts", "src/**/*.js", "demo/**/*.js", "src/typings/*.d.ts"],
-    "exclude": []
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "/@/*": ["src/*", "demo/*"]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "demo/**/*.ts",
+    "src/**/*.js",
+    "demo/**/*.js",
+    "src/typings/*.d.ts"
+  ],
+  "exclude": []
 }
-  

@@ -6,11 +6,13 @@ import "./loader-demo";
 
 @customElement("demo-loader")
 class LoaderPage extends LitElement {
-  static styles = [css`
-    .description {
-      margin: 1rem 0;
-    }
-  `];
+  static styles = [
+    css`
+      .description {
+        margin: 1rem 0;
+      }
+    `,
+  ];
 
   private i18n = new TranslationController(this);
 
@@ -26,7 +28,7 @@ class LoaderPage extends LitElement {
             type: "Record<string, string>",
             description:
               "custom css styles can be applied the the loading spinner",
-          }
+          },
         ]}
       >
         <loader-demo></loader-demo>

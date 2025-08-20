@@ -1,21 +1,14 @@
 import { ReactiveControllerHost } from "lit";
 import { soundService } from "../services";
 
-const SOUND_STORAGE_KEY = "lit-spa-sound-storage";
-
 export class SoundController {
   private host: ReactiveControllerHost;
-  value = localStorage.getItem(SOUND_STORAGE_KEY) ? true : false;
+  private unsubscribe?: () => boolean;
+  value = soundService.getSoundEnabled();
   soundPlaying = false;
 
-  _changeSound = (e: CustomEvent) => {
-    if (this.value) {
-      this.value = false;
-      localStorage.removeItem(SOUND_STORAGE_KEY);
-    } else {
-      this.value = true;
-      localStorage.setItem(SOUND_STORAGE_KEY, "on");
-    }
+  _changeSound = (enabled: boolean) => {
+    this.value = enabled;
     this.host.requestUpdate();
   };
 
@@ -31,16 +24,10 @@ export class SoundController {
   }
 
   hostConnected(): void {
-    window.addEventListener(
-      soundService.SOUND_EVENT_KEY,
-      this._changeSound as EventListener
-    );
+    this.unsubscribe = soundService.soundState.subscribe(this._changeSound);
   }
 
   hostDisconnected(): void {
-    window.removeEventListener(
-      soundService.SOUND_EVENT_KEY,
-      this._changeSound as EventListener
-    );
+    this.unsubscribe?.();
   }
 }

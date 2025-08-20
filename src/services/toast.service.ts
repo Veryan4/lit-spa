@@ -1,14 +1,15 @@
-import { Toast } from "../models/toast.model";
+import { State, Toast } from "../models";
 
-const TOAST_EVENT = "lit-spa-toast";
+const toastState = new State<Toast>();
 
 const pop = (async function* () {
   let toast: Toast;
   let resolve: (v: any) => void;
   let promise = new Promise((r) => (resolve = r));
-  window.addEventListener(TOAST_EVENT, (e: any) => {
-    toast = e.detail;
-    resolve(e);
+  // figure out when to unsubscribe
+  toastState.subscribe((t) => {
+    toast = t;
+    resolve(t);
     promise = new Promise((r) => (resolve = r));
   });
   while (true) {
@@ -17,7 +18,7 @@ const pop = (async function* () {
   }
 })();
 
-export const toastService = { newToast, newError, customToast, pop, TOAST_EVENT };
+export const toastService = { newToast, newError, customToast, pop };
 
 function newToast(text: string, properties?: Record<string, string | number>) {
   const toast: Toast = {
@@ -26,11 +27,7 @@ function newToast(text: string, properties?: Record<string, string | number>) {
     text,
     properties,
   };
-  window.dispatchEvent(
-    new CustomEvent(TOAST_EVENT, {
-      detail: toast,
-    })
-  );
+  toastState.update(toast);
 }
 
 function newError(text: string, properties?: Record<string, string | number>) {
@@ -40,17 +37,9 @@ function newError(text: string, properties?: Record<string, string | number>) {
     text,
     properties,
   };
-  window.dispatchEvent(
-    new CustomEvent(TOAST_EVENT, {
-      detail: toast,
-    })
-  );
+  toastState.update(toast);
 }
 
 function customToast(toast: Toast) {
-  window.dispatchEvent(
-    new CustomEvent(TOAST_EVENT, {
-      detail: toast,
-    })
-  );
+  toastState.update(toast);
 }

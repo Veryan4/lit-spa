@@ -30,7 +30,7 @@ export class ToastComponent extends LitElement {
             <div class="toast-wrap" style=${styleMap(toast?.styleInfo ?? {})}>
               ${this.i18n.t(toast.text, toast.properties)}
             </div>
-          </div>`
+          </div>`,
         );
       })}
     </div>`;

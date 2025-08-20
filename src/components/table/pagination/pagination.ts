@@ -18,11 +18,17 @@ export class PaginationComponent extends LitElement {
       ? html`
           <div class="pagination">
             ${this.pageNumber > 1
-              ? html`<div class="back" @click=${() => this.changePage(this.pageNumber-1)}>
+              ? html`<div
+                  class="back"
+                  @click=${() => this.changePage(this.pageNumber - 1)}
+                >
                   &#8810;
                 </div>`
               : ""}
-            <div class="first page ${classMap({selected: 1 == this.pageNumber})}" @click=${() => this.changePage(1)}>
+            <div
+              class="first page ${classMap({ selected: 1 == this.pageNumber })}"
+              @click=${() => this.changePage(1)}
+            >
               1
             </div>
             ${this.pagesCount > 5 && this.pageNumber > 3
@@ -35,7 +41,9 @@ export class PaginationComponent extends LitElement {
               }
               return newPage < this.pagesCount && newPage > 1
                 ? html`<div
-                    class="page ${classMap({selected: newPage == this.pageNumber})}"
+                    class="page ${classMap({
+                      selected: newPage == this.pageNumber,
+                    })}"
                     @click=${() => this.changePage(newPage)}
                   >
                     ${newPage}
@@ -46,13 +54,18 @@ export class PaginationComponent extends LitElement {
               ? html`<div class="more">...</div>`
               : ""}
             <div
-              class="last page ${classMap({selected: this.pagesCount == this.pageNumber})}"
+              class="last page ${classMap({
+                selected: this.pagesCount == this.pageNumber,
+              })}"
               @click=${() => this.changePage(this.pagesCount)}
             >
               ${this.pagesCount}
             </div>
             ${this.pageNumber < this.pagesCount
-              ? html`<div class="next" @click=${() => this.changePage(this.pageNumber+1)}>
+              ? html`<div
+                  class="next"
+                  @click=${() => this.changePage(this.pageNumber + 1)}
+                >
                   &#8811;
                 </div>`
               : ""}

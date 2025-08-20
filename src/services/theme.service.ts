@@ -1,11 +1,14 @@
-const THEME_EVENT = "lit-spa-theme-update";
+import { State } from "../models";
+
 const THEME_KEY = "lit-spa-theme";
+
+const themeState = new State<string>((a, b) => a === b);
 
 export const themeService = {
   getTheme,
   changeTheme,
   registerThemes,
-  THEME_EVENT,
+  themeState,
 };
 
 let themes: Record<string, any> = {
@@ -22,7 +25,7 @@ let themes: Record<string, any> = {
 };
 
 function setTheme(theme: Record<string, string>): void {
-  const root = document.querySelector(':root') as HTMLElement;
+  const root = document.querySelector(":root") as HTMLElement;
   Object.keys(theme).forEach((key) => root.style.setProperty(key, theme[key]));
 }
 
@@ -35,7 +38,7 @@ function changeTheme(newTheme: string): void {
   if (themes.hasOwnProperty(newTheme)) {
     setTheme(themes[newTheme]);
     localStorage.setItem(THEME_KEY, newTheme);
-    window.dispatchEvent(new CustomEvent(THEME_EVENT));
+    themeState.update(newTheme);
   } else {
     console.warn(newTheme + " isn't registered as a theme yet!");
   }

@@ -10,7 +10,9 @@ export const styles = css`
     gap: 0.5rem;
   }
 
-  .page, .back, .next {
+  .page,
+  .back,
+  .next {
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -24,7 +26,7 @@ export const styles = css`
 
   .page.selected {
     color: black;
-    background-color:white;
+    background-color: white;
     border: 1px black solid;
   }
 `;

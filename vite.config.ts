@@ -1,11 +1,10 @@
 import { defineConfig } from "vite";
 import { resolve as r } from "path";
 import dts from "vite-plugin-dts";
-import eslintPlugin from "vite-plugin-eslint";
-import {rollupPluginHTML} from "@web/rollup-plugin-html";
+import { rollupPluginHTML } from "@web/rollup-plugin-html";
 import resolve from "@rollup/plugin-node-resolve";
 import terser from "@rollup/plugin-terser";
-import minifyHTML from "rollup-plugin-minify-html-literals";
+import minifyHTML from "@lit-labs/rollup-plugin-minify-html-literals";
 import viteCompression from "vite-plugin-compression";
 
 export default defineConfig((config) => {
@@ -24,9 +23,9 @@ export default defineConfig((config) => {
           formats: ["es"],
         },
         rollupOptions: {
-          external: [/^lit/, 'demo/**'],
+          external: [/^lit/, "demo/**"],
         },
-        exclude: ['demo/**'],
+        exclude: ["demo/**"],
       },
       plugins: [dts()],
       publicDir: false,
@@ -43,7 +42,7 @@ export default defineConfig((config) => {
           }),
           resolve(),
           // Minify HTML template literals
-          (minifyHTML as any).default(),
+          minifyHTML(),
           // Minify JS
           terser({
             ecma: 2020,
@@ -54,7 +53,6 @@ export default defineConfig((config) => {
       },
     },
     plugins: [
-      eslintPlugin(),
       viteCompression({
         verbose: false,
         filter: (fileName: string) =>

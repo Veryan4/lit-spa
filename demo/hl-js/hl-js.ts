@@ -1,7 +1,7 @@
 import { LitElement, html } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { defaultStyles, githubStyles, styles } from "./hl-js.styles";
-import HLJS from 'highlight.js';
+import HLJS from "highlight.js";
 
 @customElement("hl-js")
 export class HLJSComponent extends LitElement {
@@ -24,7 +24,6 @@ export class HLJSComponent extends LitElement {
   @query("code")
   codeElement: HTMLElement;
 
-
   constructor() {
     super();
   }
@@ -44,8 +43,11 @@ export class HLJSComponent extends LitElement {
     const filePath = pathSplit.slice(5, pathSplit.length).join("/");
     const fileExtension =
       filePath.split(".").length > 1 ? filePath.split(".").pop() : "txt";
-    const fileURL = target.href.replace('https://github.com/Veryan4/lit-spa/blob', 'https://raw.githubusercontent.com/Veryan4/lit-spa');
-    setTimeout(() => this.fetchFiles(fileURL, startLine, endLine))
+    const fileURL = target.href.replace(
+      "https://github.com/Veryan4/lit-spa/blob",
+      "https://raw.githubusercontent.com/Veryan4/lit-spa",
+    );
+    setTimeout(() => this.fetchFiles(fileURL, startLine, endLine));
 
     return html`
       <div class="code-container" style="max-width:80vw;">
@@ -64,14 +66,23 @@ export class HLJSComponent extends LitElement {
           </div>
 
           ${this.showFileMeta
-            ? html`<div class="file-meta file-meta-${
-              this.isDarkMode ? "dark" : "light"
-              }"
-        style="${this.showBorder ? "" : "border:0"}">
-        <a target="_blank" href="${fileURL}" style="float:right">view raw</a>
-        <a target="_blank" href="${this.url}">${decodeURIComponent(
-                this.showFullPath ? filePath : pathSplit[pathSplit.length - 1]
-              )}`
+            ? html`<div
+                class="file-meta file-meta-${this.isDarkMode
+                  ? "dark"
+                  : "light"}"
+                style="${this.showBorder ? "" : "border:0"}"
+              >
+                <a target="_blank" href="${fileURL}" style="float:right"
+                  >view raw</a
+                >
+                <a target="_blank" href="${this.url}"
+                  >${decodeURIComponent(
+                    this.showFullPath
+                      ? filePath
+                      : pathSplit[pathSplit.length - 1],
+                  )}</a
+                >
+              </div>`
             : ""}
         </div>
       </div>
@@ -84,7 +95,7 @@ export class HLJSComponent extends LitElement {
         return response.text();
       } else {
         return Promise.reject(
-          `${response.status}\nFailed to download ${rawFileURL}`
+          `${response.status}\nFailed to download ${rawFileURL}`,
         );
       }
     });
@@ -123,5 +134,4 @@ export class HLJSComponent extends LitElement {
       HLJS.highlightElement(this.codeElement);
     });
   }
-
 }

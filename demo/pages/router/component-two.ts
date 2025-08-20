@@ -11,8 +11,6 @@ class ComponentTwo extends LitElement {
   private i18n = new TranslationController(this);
 
   render() {
-    return html`
-      <div>Component 2</div>
-    `;
+    return html` <div>Component 2</div> `;
   }
 }

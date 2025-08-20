@@ -6,7 +6,7 @@ export class DeviceController {
   isNarrow = window.innerWidth < 760;
   isMobile = this.isDeviceMobile();
 
-  _checkWidth = (e: Event) => {
+  _checkWidth = () => {
     const throttle = 100;
     if (
       this.width < window.innerWidth - throttle ||

@@ -293,11 +293,11 @@ export class ToolTipComponent extends LitElement {
     const addVisualOffsets = !this.isLayoutViewport() && isFixedStrategy;
     const x =
       (clientRect.left +
-        (addVisualOffsets ? window.visualViewport?.offsetLeft ?? 0 : 0)) /
+        (addVisualOffsets ? (window.visualViewport?.offsetLeft ?? 0) : 0)) /
       scaleX;
     const y =
       (clientRect.top +
-        (addVisualOffsets ? window.visualViewport?.offsetTop ?? 0 : 0)) /
+        (addVisualOffsets ? (window.visualViewport?.offsetTop ?? 0) : 0)) /
       scaleY;
     const width = clientRect.width / scaleX;
     const height = clientRect.height / scaleY;

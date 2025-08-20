@@ -33,7 +33,7 @@ export type TableFilter = {
 };
 
 export const defaultTableLabels = {
-  filterLabels: defaultFilterLabels
+  filterLabels: defaultFilterLabels,
 };
 
 @customElement("lit-spa-table")
@@ -87,7 +87,9 @@ export class TableComponent extends LitElement {
         })}
         ${this.data.map((row) =>
           this.columns.map((col) => {
-            let template = col.template ? col.template(col, row) as any : undefined;
+            let template = col.template
+              ? (col.template(col, row) as any)
+              : undefined;
             template = template?.cloneNode
               ? template.cloneNode(true)
               : template;
@@ -97,7 +99,7 @@ export class TableComponent extends LitElement {
             >
               ${template ? template : row[col.field]}
             </div>`;
-          })
+          }),
         )}
       </div>
     `;
@@ -117,7 +119,7 @@ export class TableComponent extends LitElement {
 
   renderSort(column: TableColumn) {
     const sortIndex = this.sortBy.findIndex(
-      (sort) => sort.field == column.field
+      (sort) => sort.field == column.field,
     );
     const sortDirection = this.sortBy[sortIndex]?.direction;
     return column.isSortable
@@ -140,7 +142,7 @@ export class TableComponent extends LitElement {
   }
 
   updateFilterOptions(
-    filterIndex: Map<keyof TableRow, Map<string, Set<keyof TableRow>>>
+    filterIndex: Map<keyof TableRow, Map<string, Set<keyof TableRow>>>,
   ) {
     filterIndex.forEach((index, key) => {
       (

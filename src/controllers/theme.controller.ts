@@ -3,13 +3,12 @@ import { themeService } from "../services";
 
 export class ThemeController {
   private host: ReactiveControllerHost;
+  private unsubscribe?: () => boolean;
   value = themeService.getTheme();
 
-  _changeTheme = (e: CustomEvent) => {
-    if (this.value !== themeService.getTheme()) {
-      this.value = themeService.getTheme();
-      this.host.requestUpdate();
-    }
+  _changeTheme = (theme: string) => {
+    this.value = theme;
+    this.host.requestUpdate();
   };
 
   constructor(host: ReactiveControllerHost) {
@@ -18,16 +17,10 @@ export class ThemeController {
   }
 
   hostConnected() {
-    window.addEventListener(
-      themeService.THEME_EVENT,
-      this._changeTheme as EventListener
-    );
+    this.unsubscribe = themeService.themeState.subscribe(this._changeTheme);
   }
 
   hostDisconnected() {
-    window.removeEventListener(
-      themeService.THEME_EVENT,
-      this._changeTheme as EventListener
-    );
+    this.unsubscribe?.();
   }
 }

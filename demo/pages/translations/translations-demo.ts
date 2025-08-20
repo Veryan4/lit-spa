@@ -5,22 +5,22 @@ import "../../demo-tools";
 
 @customElement("translations-demo")
 class TranslationsDemo extends LitElement {
-  private i18n = new TranslationController(this); 
+  private i18n = new TranslationController(this);
 
   render() {
-   return html`
-     <div class="body">
+    return html`
+      <div class="body">
         <button @click=${this.changeLanguage}>Toggle Language</button>
-       ${this.i18n.t('example.hello')}
-     </div>
-   `;
- }
+        ${this.i18n.t("example.hello")}
+      </div>
+    `;
+  }
 
- changeLanguage() {
-   if (this.i18n.language == 'en') {
-     translateService.useLanguage('fr');
-   } else {
-     translateService.useLanguage('en');
-   }
- }
+  changeLanguage() {
+    if (this.i18n.language == "en") {
+      translateService.useLanguage("fr");
+    } else {
+      translateService.useLanguage("en");
+    }
+  }
 }

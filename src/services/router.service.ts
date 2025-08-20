@@ -1,7 +1,9 @@
-import { Route } from "../models";
+import { Route, State } from "../models";
 
-const ROUTE_EVENT = "lit-spa-route-update";
 const ROUTE_ROOT = "root";
+
+const routerStateMap = new Map<string, State<Route>>();
+routerStateMap.set(ROUTE_ROOT, new State<Route>(undefined, true));
 
 export const routerService = {
   refresh,
@@ -11,7 +13,7 @@ export const routerService = {
   navigate,
   registerRoutes,
   unregisterRoutes,
-  ROUTE_EVENT,
+  routerStateMap,
 };
 
 class RouteMap extends Route {
@@ -39,7 +41,7 @@ function parseQueryString(querystring: string): any {
     ? JSON.parse(
         '{"' +
           querystring.substring(1).replace(/&/g, '","').replace(/=/g, '":"') +
-          '"}'
+          '"}',
       )
     : {};
 }
@@ -71,9 +73,9 @@ function patternToRegExp(pattern: string): RegExp {
       "^(|/)" +
         pattern.replace(
           /:[^\s/]+/g,
-          "([\\w\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]+)"
+          "([\\w\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff-]+)",
         ) +
-        "(|/)"
+        "(|/)",
     );
   } else {
     return new RegExp("(^$|^/$)");
@@ -96,6 +98,7 @@ function registerRoutes(newRoutes: Route[]) {
       parentRoute.children = {
         [routerId]: [...newRoutes],
       };
+      routerStateMap.set(String(routerId), new State<Route>(undefined, true));
       nextRouterId += 1;
       return String(routerId);
     }
@@ -109,10 +112,11 @@ function unregisterRoutes(routerId: string, oldRoutes = routes): boolean {
   if (routerId === ROUTE_ROOT) {
     return false;
   }
-  return oldRoutes.some(route => {
+  return oldRoutes.some((route) => {
     if (route.children) {
       if (route.children[routerId]) {
         delete route.children[routerId];
+        routerStateMap.delete(routerId);
         return true;
       }
       return Object.keys(route.children).some((key) => {
@@ -125,7 +129,7 @@ function unregisterRoutes(routerId: string, oldRoutes = routes): boolean {
 
 function findParentRouteInRouteMap(
   searchRoutes: RouteMap[],
-  searchString: string
+  searchString: string,
 ) {
   const parentRoute = findRoute(searchRoutes, searchString);
   if (parentRoute?.children) {
@@ -164,7 +168,7 @@ function findRoute(searchRoutes: RouteMap[], searchString: string) {
 function changeRoute(
   routeMap: RouteMap[],
   searchString: string,
-  routerId = ROUTE_ROOT
+  routerId = ROUTE_ROOT,
 ) {
   let nextRoute = findRoute(routeMap, searchString);
   if (!nextRoute) {
@@ -174,33 +178,21 @@ function changeRoute(
     return;
   }
   if (!nextRoute.guard) {
-    window.dispatchEvent(
-      new CustomEvent(ROUTE_EVENT + "_" + routerId, {
-        detail: nextRoute,
-      })
-    );
+    routerStateMap.get(routerId)?.update(nextRoute);
     triggerChildRouteChange(nextRoute!, searchString);
     return;
   }
   nextRoute
     .guard()
     .then(() => {
-      window.dispatchEvent(
-        new CustomEvent(ROUTE_EVENT + "_" + routerId, {
-          detail: nextRoute,
-        })
-      );
+      routerStateMap.get(routerId)?.update(nextRoute);
       triggerChildRouteChange(nextRoute!, searchString);
     })
     .catch((errorRoute) => {
       const errRoute = findRoute(routeMap, errorRoute);
       if (errRoute) {
         window.history.pushState({}, "", errRoute.name);
-        window.dispatchEvent(
-          new CustomEvent(ROUTE_EVENT + "_" + routerId, {
-            detail: errRoute,
-          })
-        );
+        routerStateMap.get(routerId)?.update(errRoute);
       }
     });
 }
@@ -208,11 +200,15 @@ function changeRoute(
 function triggerChildRouteChange(route: RouteMap, searchString: string) {
   if (route?.children) {
     if (Array.isArray(route.pattern)) {
-      route.pattern.forEach((p) =>
-      searchString = searchString.replace(new RegExp("^(|/)" + p), "")
+      route.pattern.forEach(
+        (p) =>
+          (searchString = searchString.replace(new RegExp("^(|/)" + p), "")),
       );
     } else {
-      searchString = searchString.replace(new RegExp("^(|/)" + route.pattern), "");
+      searchString = searchString.replace(
+        new RegExp("^(|/)" + route.pattern),
+        "",
+      );
     }
     Object.keys(route.children).find((key) => {
       const childRoutes = route!.children![key];

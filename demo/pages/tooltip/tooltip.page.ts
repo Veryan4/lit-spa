@@ -6,18 +6,22 @@ import "./tooltip-demo";
 
 @customElement("demo-tooltip")
 class TablePage extends LitElement {
-  static styles = [css`
-    .description {
-      margin: 1rem 0;
-    }
-  `];
+  static styles = [
+    css`
+      .description {
+        margin: 1rem 0;
+      }
+    `,
+  ];
 
   private i18n = new TranslationController(this);
 
   render() {
     return html`
       <h2>Tooltip</h2>
-      <div class="description">A tooltip which can either be activate on hover or on click.</div>
+      <div class="description">
+        A tooltip which can either be activate on hover or on click.
+      </div>
       <demo-section
         .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/tooltip/tooltip-demo.ts"}
         .documentation=${[

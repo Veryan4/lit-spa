@@ -23,9 +23,7 @@ class ThemeDemo extends LitElement {
   render() {
     return html`
       <button @click=${this.changeTheme}>Change Theme</button>
-      <div class="themed" >
-        Current theme : ${this.theme.value}
-      </div>
+      <div class="themed">Current theme : ${this.theme.value}</div>
     `;
   }
 

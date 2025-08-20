@@ -6,18 +6,23 @@ import "./theme-demo";
 
 @customElement("demo-theme")
 class ThemePage extends LitElement {
-  static styles = [css`
-    .description {
-      margin: 1rem 0;
-    }
-  `];
+  static styles = [
+    css`
+      .description {
+        margin: 1rem 0;
+      }
+    `,
+  ];
 
   private i18n = new TranslationController(this);
 
   render() {
     return html`
       <h2>Router</h2>
-      <div class="description">Leveraging css variables in order to have a theme remain consistent across isolated components.</div>
+      <div class="description">
+        Leveraging css variables in order to have a theme remain consistent
+        across isolated components.
+      </div>
       <demo-section
         .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/theme/theme-demo.ts"}
         .documentation=${[]}

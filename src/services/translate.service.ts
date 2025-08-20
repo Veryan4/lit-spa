@@ -1,8 +1,9 @@
+import { State } from "../models";
 import { httpService } from "./http.service";
 
 const LANGUAGE_KEY = "lit-spa-lang";
 const NO_SCOPE_KEY = "lit-spa-no-scope";
-const LANGUAGE_CHANGE_EVENT = "lit-spa-lang-update";
+const languageState = new State<string>((a, b) => a === b);
 
 export const translateService = {
   useLanguage,
@@ -12,8 +13,7 @@ export const translateService = {
   initLanguage,
   loadTranslations,
   getLanguage,
-  NO_SCOPE_KEY,
-  LANGUAGE_CHANGE_EVENT
+  languageState,
 };
 
 const translationCache: any = {};
@@ -25,18 +25,17 @@ async function useLanguage(lang: string): Promise<any> {
     translationCache[lang] = {};
   }
   setLanguage(lang);
-  window.dispatchEvent(
-    new CustomEvent(LANGUAGE_CHANGE_EVENT, { detail: { lang } })
-  );
+  languageState.update(lang);
 }
 
 async function loadTranslations(lang: string, scope?: string) {
   const translationCacheKey = lang + (scope ? scope : NO_SCOPE_KEY);
   if (!translationCache[lang][translationCacheKey]) {
     const translations: Record<string, any> = await httpService.get(
-      `/i18n/${scope ? scope + "/" : ""}${lang}.json`
+      `/i18n/${scope ? scope + "/" : ""}${lang}.json`,
     );
-    translationCache[lang][translationCacheKey] = toTranslationMap(translations);
+    translationCache[lang][translationCacheKey] =
+      toTranslationMap(translations);
   }
   return translationCache[lang][translationCacheKey];
 }
@@ -45,7 +44,7 @@ function toTranslationMap(obj: Record<string, any>): Map<string, string> {
   function walk(
     into: Map<string, string>,
     obj: Record<string, any>,
-    prefix: string[] = []
+    prefix: string[] = [],
   ) {
     Object.entries(obj).forEach(([key, val]) => {
       if (typeof val === "object") walk(into, val, [...prefix, key]);
@@ -91,7 +90,7 @@ function getLanguage(): string {
 function translate(
   record: string,
   translations: Map<string, string>,
-  placeholders?: Record<string, string | number>
+  placeholders?: Record<string, string | number>,
 ): string {
   const cleaned = record.replaceAll(":", ".");
   const value = translations.get(cleaned);
@@ -103,12 +102,20 @@ function translate(
   });
 }
 
-function formatNumber(number: number, language: string, options?: Intl.NumberFormatOptions): string {
+function formatNumber(
+  number: number,
+  language: string,
+  options?: Intl.NumberFormatOptions,
+): string {
   if (!options) return new Intl.NumberFormat(language).format(number);
   return new Intl.NumberFormat(language, options).format(number);
 }
 
-function formatDate(date: Date, language: string, options?: Intl.DateTimeFormatOptions): string {
+function formatDate(
+  date: Date,
+  language: string,
+  options?: Intl.DateTimeFormatOptions,
+): string {
   if (!options) return date.toLocaleDateString(language);
   return date.toLocaleDateString(language, options);
 }

@@ -19,12 +19,11 @@ export const styles = css`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color:#E8E8E8;
+    background-color: #e8e8e8;
   }
 
   .options {
     display: flex;
     align-items: center;
   }
-
 `;

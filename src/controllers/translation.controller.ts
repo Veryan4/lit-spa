@@ -15,47 +15,44 @@ export class TranslationControllerOptions {
 
 export class TranslationController {
   private host: ReactiveControllerHost;
+  private unsubscribe?: () => boolean;
   language: string;
   scope?: string;
   translations = new Map<string, string>();
-  loadTranslations: (language:string, scope?: string) => any = translateService.loadTranslations;
+  loadTranslations: (language: string, scope?: string) => any =
+    translateService.loadTranslations;
   hasLoadedTranslations = false;
 
   t(
     translationKey: string,
-    properties?: Record<string, string | number>
+    properties?: Record<string, string | number>,
   ): DirectiveResult<typeof TranslationDirective> {
     return translationDirective(
       translationKey,
       this.language,
       this.translations,
-      properties
+      properties,
     );
   }
 
   n(
     number: number,
-    options?: Intl.NumberFormatOptions
+    options?: Intl.NumberFormatOptions,
   ): DirectiveResult<typeof TranslationDirective> {
-    return numberDirective(
-      number,
-      this.language,
-      options
-    );
+    return numberDirective(number, this.language, options);
   }
 
   d(
     date: Date,
-    options?: Intl.DateTimeFormatOptions
+    options?: Intl.DateTimeFormatOptions,
   ): DirectiveResult<typeof TranslationDirective> {
-    return dateDirective(
-      date,
-      this.language,
-      options
-    );
+    return dateDirective(date, this.language, options);
   }
 
-  constructor(host: ReactiveControllerHost, options?: TranslationControllerOptions) {
+  constructor(
+    host: ReactiveControllerHost,
+    options?: TranslationControllerOptions,
+  ) {
     this.host = host;
     this.scope = options?.scope;
     this.language = translateService.initLanguage(options?.supportedLanguages);
@@ -64,24 +61,18 @@ export class TranslationController {
   }
 
   hostConnected() {
-    window.addEventListener(
-      translateService.LANGUAGE_CHANGE_EVENT,
-      this._changeLanguage as EventListener
+    this.unsubscribe = translateService.languageState.subscribe(
+      this._changeLanguage,
     );
   }
 
   hostDisconnected() {
-    window.removeEventListener(
-      translateService.LANGUAGE_CHANGE_EVENT,
-      this._changeLanguage as EventListener
-    );
+    this.unsubscribe?.();
   }
 
-  _changeLanguage = (e: CustomEvent) => {
-    if (this.language !== e.detail.lang) {
-      this.language = e.detail.lang;
-      this.processLoad();
-    }
+  _changeLanguage = (lang: string) => {
+    this.language = lang;
+    this.processLoad();
   };
 
   async processLoad() {
@@ -103,7 +94,7 @@ class TranslationDirective extends Directive {
       language,
       translations,
       properties,
-    ]: DirectiveParameters<this>
+    ]: DirectiveParameters<this>,
   ) {
     return this.render(translationKey, language, translations, properties);
   }
@@ -112,7 +103,7 @@ class TranslationDirective extends Directive {
     translationKey: string,
     language: string,
     translations: Map<string, string>,
-    properties?: Record<string, string | number>
+    properties?: Record<string, string | number>,
   ) {
     if (
       this.currentLanguage === language &&
@@ -133,28 +124,17 @@ const translationDirective = directive(TranslationDirective);
 
 class NumberDirective extends Directive {
   private currentLanguage: string;
-  private  options: Intl.NumberFormatOptions;
+  private options: Intl.NumberFormatOptions;
 
   update(
     _part: ChildPart,
-    [
-      number,
-      language,
-      options,
-    ]: DirectiveParameters<this>
+    [number, language, options]: DirectiveParameters<this>,
   ) {
     return this.render(number, language, options);
   }
 
-  render(
-    number: number,
-    language: string,
-    options?: Intl.NumberFormatOptions
-  ) {
-    if (
-      this.currentLanguage === language &&
-      this.options === options
-    ) {
+  render(number: number, language: string, options?: Intl.NumberFormatOptions) {
+    if (this.currentLanguage === language && this.options === options) {
       return noChange;
     }
     this.currentLanguage = language;
@@ -172,24 +152,13 @@ class DateDirective extends Directive {
 
   update(
     _part: ChildPart,
-    [
-      date,
-      language,
-      options,
-    ]: DirectiveParameters<this>
+    [date, language, options]: DirectiveParameters<this>,
   ) {
     return this.render(date, language, options);
   }
 
-  render(
-    date: Date,
-    language: string,
-    options?: Intl.DateTimeFormatOptions
-  ) {
-    if (
-      this.currentLanguage === language &&
-      this.options === options
-    ) {
+  render(date: Date, language: string, options?: Intl.DateTimeFormatOptions) {
+    if (this.currentLanguage === language && this.options === options) {
       return noChange;
     }
     this.currentLanguage = language;

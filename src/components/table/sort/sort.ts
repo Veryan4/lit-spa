@@ -18,26 +18,24 @@ export class SortComponent extends LitElement {
 
   render() {
     return html`<div class="sort" @click=${this.changeSort}>
-    <div
-      class="sort-default ${classMap({
-        show: !this.sortDirection,
-      })}"
-    >
-      ${this.sortSVG(8)}
-      <div style="display:flex;" class="down">
+      <div
+        class="sort-default ${classMap({
+          show: !this.sortDirection,
+        })}"
+      >
         ${this.sortSVG(8)}
+        <div style="display:flex;" class="down">${this.sortSVG(8)}</div>
       </div>
-    </div>
-    <div
-      class="sort-direction ${classMap({
-        up: this.sortDirection == "ASCENDING",
-        down: this.sortDirection == "DESCENDING",
-      })}"
-    >
-      ${this.sortSVG()}
-      <div class="sort-number">${this.sortIndex + 1}</div>
-    </div>
-  </div>`;
+      <div
+        class="sort-direction ${classMap({
+          up: this.sortDirection == "ASCENDING",
+          down: this.sortDirection == "DESCENDING",
+        })}"
+      >
+        ${this.sortSVG()}
+        <div class="sort-number">${this.sortIndex + 1}</div>
+      </div>
+    </div>`;
   }
 
   sortSVG(size = 16) {
@@ -47,7 +45,6 @@ export class SortComponent extends LitElement {
       <path d="M236.7,188,148.8,36a24,24,0,0,0-41.6,0h0L19.3,188A23.9,23.9,0,0,0,40,224H216a23.9,23.9,0,0,0,20.7-36Z"/>
     </svg>`;
   }
-
 
   changeSort() {
     const options = {

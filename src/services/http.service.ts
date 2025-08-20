@@ -1,6 +1,6 @@
 const AUTH_TOKEN_KEY = "lit-spa-auth-token";
 const TIME_CACHED_IN_MINUTES = 5;
-const cache = new Map<string, { expires: Date, value: Promise<Response> }>();
+const cache = new Map<string, { expires: Date; value: Promise<Response> }>();
 
 export const httpService = {
   get,
@@ -15,12 +15,16 @@ export const httpService = {
   createBody,
   baseHttp,
   cachedHttp,
-  cleanCache
+  cleanCache,
 };
 
 setInterval(() => httpService.cleanCache(), TIME_CACHED_IN_MINUTES * 1000 * 60);
 
-function baseHttp<T>(url: string, options?: RequestInit, bustCache = false): Promise<T> {
+function baseHttp<T>(
+  url: string,
+  options?: RequestInit,
+  bustCache = false,
+): Promise<T> {
   return httpService.cachedHttp(url, options, bustCache).then((response) => {
     if (!response.ok) {
       throw new Error(response.statusText);
@@ -30,44 +34,72 @@ function baseHttp<T>(url: string, options?: RequestInit, bustCache = false): Pro
 }
 
 function get<T>(url: string, bustCache = false): Promise<T> {
-  return httpService.baseHttp(url, {
-    method: "GET",
-    headers: httpService.createHeaders(),
-  }, bustCache);
+  return httpService.baseHttp(
+    url,
+    {
+      method: "GET",
+      headers: httpService.createHeaders(),
+    },
+    bustCache,
+  );
 }
 
-function put<T>(url: string, data: any | FormData, bustCache = false): Promise<T> {
+function put<T>(
+  url: string,
+  data: any | FormData,
+  bustCache = false,
+): Promise<T> {
   const isFormData = data instanceof FormData;
-  return httpService.baseHttp(url, {
-    method: "PUT",
-    headers: httpService.createHeaders(isFormData),
-    body: httpService.createBody(data, isFormData),
-  }, bustCache);
+  return httpService.baseHttp(
+    url,
+    {
+      method: "PUT",
+      headers: httpService.createHeaders(isFormData),
+      body: httpService.createBody(data, isFormData),
+    },
+    bustCache,
+  );
 }
 
 function post<T>(url: string, data: any, bustCache = false): Promise<T> {
   const isFormData = data instanceof FormData;
-  return httpService.baseHttp(url, {
-    method: "POST",
-    headers: httpService.createHeaders(isFormData),
-    body: httpService.createBody(data, isFormData),
-  }, bustCache);
+  return httpService.baseHttp(
+    url,
+    {
+      method: "POST",
+      headers: httpService.createHeaders(isFormData),
+      body: httpService.createBody(data, isFormData),
+    },
+    bustCache,
+  );
 }
 
-function patch<T>(url: string, data: any | FormData, bustCache = false): Promise<T> {
+function patch<T>(
+  url: string,
+  data: any | FormData,
+  bustCache = false,
+): Promise<T> {
   const isFormData = data instanceof FormData;
-  return httpService.baseHttp(url, {
-    method: "PATCH",
-    headers: httpService.createHeaders(isFormData),
-    body: httpService.createBody(data, isFormData),
-  }, bustCache);
+  return httpService.baseHttp(
+    url,
+    {
+      method: "PATCH",
+      headers: httpService.createHeaders(isFormData),
+      body: httpService.createBody(data, isFormData),
+    },
+    bustCache,
+  );
 }
 
 function del<T>(url: string, bustCache = false): Promise<T> {
-  return httpService.baseHttp(url, {
-    method: "DELETE",
-    headers: httpService.createHeaders(),
-  }, bustCache);
+  return httpService.baseHttp(
+    url,
+    {
+      method: "DELETE",
+      headers: httpService.createHeaders(),
+    },
+    bustCache,
+  );
 }
 
 function createHeaders(isFormData?: boolean) {
@@ -102,23 +134,27 @@ function getAuthToken(): string | null {
   return localStorage.getItem(AUTH_TOKEN_KEY);
 }
 
-function cachedHttp(url: string, options?: RequestInit, bustCache = false): Promise<Response> {
-  const cacheKey = JSON.stringify({url, options});
+function cachedHttp(
+  url: string,
+  options?: RequestInit,
+  bustCache = false,
+): Promise<Response> {
+  const cacheKey = JSON.stringify({ url, options });
   const item = cache.get(cacheKey);
   let call = item && new Date() < item.expires ? item.value : false;
   if (!call || bustCache) {
     call = fetch(url, options);
     const expires = new Date();
     expires.setMinutes(expires.getMinutes() + TIME_CACHED_IN_MINUTES);
-    cache.set(cacheKey, {expires, value: call});
+    cache.set(cacheKey, { expires, value: call });
   }
-  return call.then(r => r.clone());
+  return call.then((r) => r.clone());
 }
 
 function cleanCache() {
   const now = new Date();
   cache.forEach((value, key) => {
-    if(value.expires < now){
+    if (value.expires < now) {
       cache.delete(key);
     }
   });

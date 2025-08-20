@@ -51,11 +51,11 @@ class TablePageDemo extends LitElement {
     `;
   }
 
-    renderDate(column: TableColumn, row: TableRow) {
-      const date = new Date(row[column.field]);
-      const element = document.createElement('div');
-      const options: any = { year: 'numeric', month: 'long', day: 'numeric' };
-      element.innerText = date.toLocaleDateString("en-US", options);
-      return element;
+  renderDate(column: TableColumn, row: TableRow) {
+    const date = new Date(row[column.field]);
+    const element = document.createElement("div");
+    const options: any = { year: "numeric", month: "long", day: "numeric" };
+    element.innerText = date.toLocaleDateString("en-US", options);
+    return element;
   }
 }

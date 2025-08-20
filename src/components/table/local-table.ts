@@ -6,7 +6,7 @@ import {
   TableFilter,
   TableRow,
   TableSort,
-  defaultTableLabels
+  defaultTableLabels,
 } from "./table";
 import { styles } from "./table.styles";
 
@@ -17,7 +17,7 @@ export type SearchOperator = "AND" | "OR";
 
 export const defaultLocalTableLabels = {
   searchPlaceholder: "Search",
-  tableLabels: defaultTableLabels
+  tableLabels: defaultTableLabels,
 };
 
 @customElement("lit-spa-local-table")
@@ -124,7 +124,7 @@ export class LocalTableComponent extends LitElement {
     this.filterIndex.clear();
     this.filterIndex.set(
       "lit-spa-search",
-      new Map<string, Set<keyof TableRow>>()
+      new Map<string, Set<keyof TableRow>>(),
     );
     this.columns.forEach((col) => {
       if (col.filterType) {
@@ -252,7 +252,7 @@ export class LocalTableComponent extends LitElement {
   recursiveSort(
     row1: TableRow,
     row2: TableRow,
-    tableSorts: TableSort[]
+    tableSorts: TableSort[],
   ): number {
     const tableSort = tableSorts[0];
     const value1 = this.toLowerCaseIfString(row1[tableSort.field]);
@@ -309,7 +309,7 @@ export class LocalTableComponent extends LitElement {
           acc = acc.filter(
             (row) =>
               row[filter.field] > filter.values[0] &&
-              row[filter.field] < filter.values[1]
+              row[filter.field] < filter.values[1],
           );
         }
         if (filter.condition == "GREATER") {
@@ -343,7 +343,7 @@ export class LocalTableComponent extends LitElement {
       sorts1.every(
         (sort1, i) =>
           sort1.direction === sorts2[i].direction &&
-          sort1.field === sorts2[i].field
+          sort1.field === sorts2[i].field,
       )
     );
   }
@@ -392,7 +392,7 @@ export class LocalTableComponent extends LitElement {
     const { column, condition, values } = event.detail;
     const field: keyof TableRow = column.field;
     const currentFilter = this.filterBy.find(
-      (filter) => filter.field === field
+      (filter) => filter.field === field,
     );
     if (currentFilter) {
       currentFilter.values = values;

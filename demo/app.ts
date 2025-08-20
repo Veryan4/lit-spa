@@ -4,7 +4,7 @@ import { classMap } from "lit/directives/class-map.js";
 import {
   RouteController,
   TranslationController,
-  routerService
+  routerService,
 } from "./demo-tools";
 import { routes } from "./app.routes";
 
@@ -69,7 +69,9 @@ class LitApp extends LitElement {
   ];
 
   private router = new RouteController(this, routes);
-  private i18n = new TranslationController(this, {supportedLanguages: ['en', 'fr']});
+  private i18n = new TranslationController(this, {
+    supportedLanguages: ["en", "fr"],
+  });
 
   render() {
     return html`
@@ -85,7 +87,7 @@ class LitApp extends LitElement {
                 @click=${() => routerService.navigate(route.name)}
               >
                 ${this.formatRouteName(route.name)}
-              </div>`
+              </div>`,
           )}
         </div>
         <div class="main">${this.router.navigation()}</div>
@@ -95,7 +97,7 @@ class LitApp extends LitElement {
   }
 
   protected shouldUpdate(
-    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
+    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>,
   ): boolean {
     return this.i18n.hasLoadedTranslations;
   }
@@ -106,5 +108,4 @@ class LitApp extends LitElement {
       .map((str) => str.charAt(0).toUpperCase() + str.slice(1))
       .join(" ");
   }
-
 }

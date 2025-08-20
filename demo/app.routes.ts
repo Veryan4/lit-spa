@@ -7,7 +7,7 @@ export const routes: Route[] = [
     pattern: ["", "home"],
     component: () =>
       import("./pages/home/home.page").then(
-        () => html`<demo-home></demo-home>`
+        () => html`<demo-home></demo-home>`,
       ),
   },
   {
@@ -15,7 +15,7 @@ export const routes: Route[] = [
     pattern: ["", "table"],
     component: () =>
       import("./pages/table/tables.page").then(
-        () => html`<demo-tables></demo-tables>`
+        () => html`<demo-tables></demo-tables>`,
       ),
   },
   {
@@ -23,7 +23,7 @@ export const routes: Route[] = [
     pattern: "tooltip",
     component: () =>
       import("./pages/tooltip/tooltip.page").then(
-        () => html`<demo-tooltip></demo-tooltip>`
+        () => html`<demo-tooltip></demo-tooltip>`,
       ),
   },
   {
@@ -31,7 +31,7 @@ export const routes: Route[] = [
     pattern: "toast",
     component: () =>
       import("./pages/toast/toast.page").then(
-        () => html`<demo-toast></demo-toast>`
+        () => html`<demo-toast></demo-toast>`,
       ),
   },
   {
@@ -39,7 +39,7 @@ export const routes: Route[] = [
     pattern: "loader",
     component: () =>
       import("./pages/loader/loader.page").then(
-        () => html`<demo-loader></demo-loader>`
+        () => html`<demo-loader></demo-loader>`,
       ),
   },
   {
@@ -47,7 +47,7 @@ export const routes: Route[] = [
     pattern: "translations",
     component: () =>
       import("./pages/translations/translations.page").then(
-        () => html`<demo-translations></demo-translations>`
+        () => html`<demo-translations></demo-translations>`,
       ),
   },
   {
@@ -55,7 +55,7 @@ export const routes: Route[] = [
     pattern: "router",
     component: () =>
       import("./pages/router/router.page").then(
-        () => html`<demo-router></demo-router>`
+        () => html`<demo-router></demo-router>`,
       ),
   },
   {
@@ -63,7 +63,7 @@ export const routes: Route[] = [
     pattern: "theme",
     component: () =>
       import("./pages/theme/theme.page").then(
-        () => html`<demo-theme></demo-theme>`
+        () => html`<demo-theme></demo-theme>`,
       ),
   },
   {
@@ -71,7 +71,7 @@ export const routes: Route[] = [
     pattern: "http",
     component: () =>
       import("./pages/http/http.page").then(
-        () => html`<demo-http></demo-http>`
+        () => html`<demo-http></demo-http>`,
       ),
   },
   //{

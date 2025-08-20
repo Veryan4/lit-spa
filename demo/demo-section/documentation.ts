@@ -57,31 +57,30 @@ class DocumentationDemo extends LitElement {
     return html`
       <div class="grid">
         ${this.documentation.map(
-          (doc) =>
-            html`
-              <div class="doc">
-                <div class="property">
-                  Property:
-                  <div class="attr">${doc.property}</div>
-                </div>
-                <div class="type">
-                  Type:
-                  <div class="class">${this.renderType(doc.type)}</div>
-                </div>
+          (doc) => html`
+            <div class="doc">
+              <div class="property">
+                Property:
+                <div class="attr">${doc.property}</div>
               </div>
-              <div class="doc">
-                <div>
-                  Description:
-                  <div>${doc.description}</div>
-                </div>
-                ${doc.default
-                  ? html` <div>
-                      Default Value:
-                      <div>${doc.default}</div>
-                    </div>`
-                  : ""}
+              <div class="type">
+                Type:
+                <div class="class">${this.renderType(doc.type)}</div>
               </div>
-            `
+            </div>
+            <div class="doc">
+              <div>
+                Description:
+                <div>${doc.description}</div>
+              </div>
+              ${doc.default
+                ? html` <div>
+                    Default Value:
+                    <div>${doc.default}</div>
+                  </div>`
+                : ""}
+            </div>
+          `,
         )}
       </div>
     `;

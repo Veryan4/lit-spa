@@ -75,7 +75,9 @@ export class InfiniteTableComponent extends LitElement {
       ...(this.scrollOptions ?? {}),
     };
     this.observer = new IntersectionObserver(([entry]) => {
-      entry.isIntersecting && this.dispatchEvent(new Event("scrolled"));
+      if (entry.isIntersecting) {
+        this.dispatchEvent(new Event("scrolled"));
+      }
     }, options);
     this.observer.observe(this.bottom);
   }

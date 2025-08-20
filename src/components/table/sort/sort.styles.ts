@@ -11,8 +11,8 @@ export const styles = css`
   }
 
   .sort-default.show {
-    display:flex;
-    align-items:center;
+    display: flex;
+    align-items: center;
   }
 
   .sort-direction {

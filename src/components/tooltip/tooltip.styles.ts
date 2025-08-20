@@ -1,14 +1,15 @@
 import { css } from "lit";
 
 export const styles = css`
-
-  #floating{
+  #floating {
     visibility: hidden;
     z-index: 9999;
     border-radius: 4px;
     background-color: var(--secondary-background-color);
-    box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
-      0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+    box-shadow:
+      0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+      0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+      0px 1px 3px 0px rgba(0, 0, 0, 0.12);
     box-sizing: border-box;
     padding: 0.5rem;
   }
@@ -27,7 +28,7 @@ export const styles = css`
     visibility: visible;
   }
 
-  #reference.default:hover + #floating.default{
+  #reference.default:hover + #floating.default {
     visibility: visible;
   }
 
@@ -42,5 +43,4 @@ export const styles = css`
     white-space: nowrap;
     padding: 0.25rem 1rem;
   }
-
 `;
