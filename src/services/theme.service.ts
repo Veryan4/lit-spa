@@ -2,13 +2,13 @@ import { State } from "../models";
 
 const THEME_KEY = "lit-spa-theme";
 
-const themeState = new State<string>((a, b) => a === b);
+const state = new State<string>();
 
 export const themeService = {
   getTheme,
   changeTheme,
   registerThemes,
-  themeState,
+  state,
 };
 
 let themes: Record<string, any> = {
@@ -38,7 +38,7 @@ function changeTheme(newTheme: string): void {
   if (themes.hasOwnProperty(newTheme)) {
     setTheme(themes[newTheme]);
     localStorage.setItem(THEME_KEY, newTheme);
-    themeState.update(newTheme);
+    state.update(newTheme);
   } else {
     console.warn(newTheme + " isn't registered as a theme yet!");
   }

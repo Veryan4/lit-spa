@@ -24,7 +24,7 @@ export class SoundController {
   }
 
   hostConnected(): void {
-    this.unsubscribe = soundService.soundState.subscribe(this._changeSound);
+    this.unsubscribe = soundService.state.subscribe(this._changeSound);
   }
 
   hostDisconnected(): void {

@@ -1,6 +1,6 @@
 import { State } from "../models";
 
-const soundState = new State<boolean>((a, b) => a === b);
+const state = new State<boolean>();
 
 const SOUND_STORAGE_KEY = "lit-spa-sound-storage";
 
@@ -8,7 +8,7 @@ export const soundService = {
   getSoundEnabled,
   toggleSound,
   playSound,
-  soundState,
+  state,
 };
 
 const timeouts: any = {};
@@ -21,10 +21,10 @@ function toggleSound(): void {
   const enabled = getSoundEnabled();
   if (enabled) {
     localStorage.removeItem(SOUND_STORAGE_KEY);
-    soundState.update(!enabled);
+    state.update(!enabled);
   } else {
     localStorage.setItem(SOUND_STORAGE_KEY, "on");
-    soundState.update(enabled);
+    state.update(enabled);
   }
 }
 

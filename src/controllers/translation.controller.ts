@@ -61,9 +61,7 @@ export class TranslationController {
   }
 
   hostConnected() {
-    this.unsubscribe = translateService.languageState.subscribe(
-      this._changeLanguage,
-    );
+    this.unsubscribe = translateService.state.subscribe(this._changeLanguage);
   }
 
   hostDisconnected() {

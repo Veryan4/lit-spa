@@ -2,8 +2,14 @@ import { Route, State } from "../models";
 
 const ROUTE_ROOT = "root";
 
-const routerStateMap = new Map<string, State<Route>>();
-routerStateMap.set(ROUTE_ROOT, new State<Route>(undefined, true));
+class RouterState<T> extends State<T> {
+  getValue(): T {
+    return this.value; // lit template can't be cloned.
+  }
+}
+
+const routerStateMap = new Map<string, RouterState<Route>>();
+routerStateMap.set(ROUTE_ROOT, new RouterState<Route>());
 
 export const routerService = {
   refresh,
@@ -98,7 +104,7 @@ function registerRoutes(newRoutes: Route[]) {
       parentRoute.children = {
         [routerId]: [...newRoutes],
       };
-      routerStateMap.set(String(routerId), new State<Route>(undefined, true));
+      routerStateMap.set(String(routerId), new RouterState<Route>());
       nextRouterId += 1;
       return String(routerId);
     }

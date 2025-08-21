@@ -3,7 +3,7 @@ import { httpService } from "./http.service";
 
 const LANGUAGE_KEY = "lit-spa-lang";
 const NO_SCOPE_KEY = "lit-spa-no-scope";
-const languageState = new State<string>((a, b) => a === b);
+const state = new State<string>();
 
 export const translateService = {
   useLanguage,
@@ -13,7 +13,7 @@ export const translateService = {
   initLanguage,
   loadTranslations,
   getLanguage,
-  languageState,
+  state,
 };
 
 const translationCache: any = {};
@@ -25,7 +25,7 @@ async function useLanguage(lang: string): Promise<any> {
     translationCache[lang] = {};
   }
   setLanguage(lang);
-  languageState.update(lang);
+  state.update(lang);
 }
 
 async function loadTranslations(lang: string, scope?: string) {

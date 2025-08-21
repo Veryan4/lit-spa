@@ -1,17 +1,16 @@
 export class State<T> {
-  private value: T;
-  private listeners = new Map<number, (e: T) => any>();
-  private oneTimeListeners: ((e: T) => any)[] = [];
-  private isEqual?: (a: T, b: T) => boolean;
-  private skipClone?: boolean;
+  protected value: T;
+  protected listeners = new Map<number, (e: T) => any>();
+  protected oneTimeListeners: ((e: T) => any)[] = [];
+  protected isEqual = (a: T, b: T) => a === b;
 
-  constructor(isEqual?: (a: T, b: T) => boolean, skipClone?: boolean) {
-    this.isEqual = isEqual;
-    this.skipClone = skipClone;
+  constructor(isEqual?: (a: T, b: T) => boolean) {
+    if (isEqual) {
+      this.isEqual = isEqual;
+    }
   }
 
   getValue(): T {
-    if (this.skipClone) return this.value;
     return structuredClone(this.value);
   }
 
