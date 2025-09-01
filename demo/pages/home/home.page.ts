@@ -51,8 +51,9 @@ class HomePage extends LitElement {
               >lit.dev</a
             ></span
           >
-          WebComponents. It's focused on being a low dependency library but
-          using only lit as the runtime dependency.
+          WebComponents. It's a 1 dependency library, which is relatively light
+          weight (51.71 kB │ gzip: 13.37 kB) for the amount of value it
+          delivers.
         </div>
         <h3>Websites built with the framework:</h3>
         <ul class="examples">

@@ -1,4 +1,5 @@
 import { Route, State } from "../models";
+import { hashService } from "./hash.service";
 
 const ROUTE_ROOT = "root";
 
@@ -39,7 +40,13 @@ function refresh() {
 
 function navigate(href: string): void {
   window.history.pushState({}, "", href);
+  applyHash(href);
   refresh();
+}
+
+function applyHash(href: string) {
+  const hash = href.split("?")[0].split("#");
+  hashService.state.update(hash.length > 1 ? hash[1] : "");
 }
 
 function parseQueryString(querystring: string): any {

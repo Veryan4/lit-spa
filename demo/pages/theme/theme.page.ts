@@ -18,7 +18,6 @@ class ThemePage extends LitElement {
 
   render() {
     return html`
-      <h2>Router</h2>
       <div class="description">
         Leveraging css variables in order to have a theme remain consistent
         across isolated components.

@@ -1,4 +1,4 @@
-import { ReactiveControllerHost, noChange } from "lit";
+import { LitElement, ReactiveControllerHost, noChange } from "lit";
 import { ChildPart, DirectiveParameters, directive } from "lit/directive.js";
 import { AsyncDirective } from "lit/async-directive.js";
 import { Route } from "../models/route.model";

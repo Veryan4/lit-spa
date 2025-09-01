@@ -5,7 +5,7 @@ import { rollupPluginHTML } from "@web/rollup-plugin-html";
 import resolve from "@rollup/plugin-node-resolve";
 import terser from "@rollup/plugin-terser";
 import minifyHTML from "@lit-labs/rollup-plugin-minify-html-literals";
-import viteCompression from "vite-plugin-compression";
+import { compression } from "vite-plugin-compression2";
 
 export default defineConfig((config) => {
   if (config.mode == "lib") {
@@ -52,14 +52,6 @@ export default defineConfig((config) => {
         preserveEntrySignatures: "strict",
       },
     },
-    plugins: [
-      viteCompression({
-        verbose: false,
-        filter: (fileName: string) =>
-          /\.(js|css|html|txt|xml|json|svg|ico|ttf|otf|eot)$/.test(fileName),
-        algorithm: "brotliCompress",
-        ext: ".br",
-      }),
-    ],
+    plugins: [compression()],
   };
 });

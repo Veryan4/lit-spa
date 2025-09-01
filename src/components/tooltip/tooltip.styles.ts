@@ -17,7 +17,7 @@ export const styles = css`
   #floating.default {
     width: fit-content;
     font-family: var(--font-family, "Roboto Sans", sans-serif);
-    font-size: var(--font-size, 18px);
+    font-size: var(--tooltip-font-size, 12px);
     background: var(--toast-background, #313131);
     color: var(--toast-color, #fff);
     border-radius: 6px;
@@ -41,6 +41,7 @@ export const styles = css`
     width: fit-content;
     height: fit-content;
     white-space: nowrap;
-    padding: 0.25rem 1rem;
+    padding: 0.5rem;
+    line-height: 1.5rem;
   }
 `;

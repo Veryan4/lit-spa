@@ -5,3 +5,4 @@ export * from "./table/table";
 export * from "./table/local-table";
 export * from "./table/infinite-table";
 export * from "./table/pagination/pagination";
+export * from "./hash/hash";

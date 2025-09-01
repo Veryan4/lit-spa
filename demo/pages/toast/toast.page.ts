@@ -18,7 +18,6 @@ class ToastPage extends LitElement {
 
   render() {
     return html`
-      <h2>Toast</h2>
       <div class="description">
         A notification toast which will stack upon itself and can be customized
       </div>

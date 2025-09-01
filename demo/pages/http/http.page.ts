@@ -18,7 +18,6 @@ class HttpPage extends LitElement {
 
   render() {
     return html`
-      <h2>Http</h2>
       <div class="description">
         A service that simplifies the web browsers' fetch api. It has a 5 min
         cache by default which can be busted on command. The baseHttp function

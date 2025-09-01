@@ -29,10 +29,10 @@ class RouterDemo extends LitElement {
   render() {
     return html`
       <div class="body">
-        <button @click=${() => routerService.navigate("router/one")}>
+        <button @click=${() => routerService.navigate("state-management/one")}>
           One
         </button>
-        <button @click=${() => routerService.navigate("router/two")}>
+        <button @click=${() => routerService.navigate("state-management/two")}>
           Two
         </button>
         ${this.router.navigation()}

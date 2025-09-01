@@ -18,7 +18,6 @@ class RouterPage extends LitElement {
 
   render() {
     return html`
-      <h2>Router</h2>
       <div class="description">
         Provides the ability to lazy-load components, along with other typical
         routing features, such as guards, default routes, and collecting path

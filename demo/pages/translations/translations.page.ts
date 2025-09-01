@@ -18,7 +18,6 @@ class TranslationsPage extends LitElement {
 
   render() {
     return html`
-      <h2>Translations</h2>
       <div class="description">
         Accessing scoped translation files to render a string in different
         languages. By default the translation service will look for a

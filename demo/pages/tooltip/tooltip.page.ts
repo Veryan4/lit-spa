@@ -18,7 +18,6 @@ class TablePage extends LitElement {
 
   render() {
     return html`
-      <h2>Tooltip</h2>
       <div class="description">
         A tooltip which can either be activate on hover or on click.
       </div>

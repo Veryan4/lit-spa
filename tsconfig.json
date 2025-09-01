@@ -20,9 +20,15 @@
     "types": ["vite/client", "@types/jest"],
     "baseUrl": ".",
     "paths": {
-      "/@/*": ["src/*"]
+      "/@/*": ["src/*", "demo/*"]
     }
   },
-  "include": ["src/**/*.ts", "typings/*.d.ts", "src/**/*.js", "typings/*.d.ts"],
+  "include": [
+    "src/**/*.ts",
+    "demo/**/*.ts",
+    "src/**/*.js",
+    "demo/**/*.js",
+    "src/typings/*.d.ts"
+  ],
   "exclude": []
 }

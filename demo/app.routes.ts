@@ -11,68 +11,22 @@ export const routes: Route[] = [
       ),
   },
   {
-    name: "table",
-    pattern: ["", "table"],
+    name: "state-management",
+    pattern: "state-management",
     component: () =>
-      import("./pages/table/tables.page").then(
-        () => html`<demo-tables></demo-tables>`,
+      import("./pages/state-management/state-management.page").then(
+        () => html`<demo-state-management></demo-state-management>`,
       ),
+    hashes: ["router", "http", "translations", "theme"],
   },
   {
-    name: "tooltip",
-    pattern: "tooltip",
+    name: "components",
+    pattern: "components",
     component: () =>
-      import("./pages/tooltip/tooltip.page").then(
-        () => html`<demo-tooltip></demo-tooltip>`,
+      import("./pages/components/components.page").then(
+        () => html`<demo-components></demo-components>`,
       ),
-  },
-  {
-    name: "toast",
-    pattern: "toast",
-    component: () =>
-      import("./pages/toast/toast.page").then(
-        () => html`<demo-toast></demo-toast>`,
-      ),
-  },
-  {
-    name: "loader",
-    pattern: "loader",
-    component: () =>
-      import("./pages/loader/loader.page").then(
-        () => html`<demo-loader></demo-loader>`,
-      ),
-  },
-  {
-    name: "translations",
-    pattern: "translations",
-    component: () =>
-      import("./pages/translations/translations.page").then(
-        () => html`<demo-translations></demo-translations>`,
-      ),
-  },
-  {
-    name: "router",
-    pattern: "router",
-    component: () =>
-      import("./pages/router/router.page").then(
-        () => html`<demo-router></demo-router>`,
-      ),
-  },
-  {
-    name: "theme",
-    pattern: "theme",
-    component: () =>
-      import("./pages/theme/theme.page").then(
-        () => html`<demo-theme></demo-theme>`,
-      ),
-  },
-  {
-    name: "http",
-    pattern: "http",
-    component: () =>
-      import("./pages/http/http.page").then(
-        () => html`<demo-http></demo-http>`,
-      ),
+    hashes: ["tooltip", "toast", "tables"],
   },
   //{
   //  name: "not-found",

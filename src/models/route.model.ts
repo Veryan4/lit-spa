@@ -7,4 +7,5 @@ export class Route {
   guard?: () => Promise<string | boolean | undefined>;
   params?: Record<string, string>;
   data?: any;
+  hashes?: string[];
 }

@@ -22,6 +22,16 @@ let themes: Record<string, any> = {
     "--toast-background": "#313131",
     "--chip-background": "#E8E8E8",
   },
+  dark: {
+    "--primary-color": "#fafafa",
+    "--primary-background-color": "#2c2c2c",
+    "--secondary-background-color": "black",
+    "--image-color": "invert(100%)",
+    "--input-fill": "#696969",
+    "--outline-color": "#2c2c2c",
+    "--toast-background": "black",
+    "--chip-background": "#696969",
+  },
 };
 
 function setTheme(theme: Record<string, string>): void {
@@ -31,7 +41,7 @@ function setTheme(theme: Record<string, string>): void {
 
 function getTheme(): string {
   const storedTheme = localStorage.getItem(THEME_KEY);
-  return storedTheme ? storedTheme : "light";
+  return storedTheme || detectOSTheme();
 }
 
 function changeTheme(newTheme: string): void {
@@ -44,12 +54,21 @@ function changeTheme(newTheme: string): void {
   }
 }
 
-function registerThemes(themesMap: Record<string, any>) {
-  themes = themesMap;
+function registerThemes(themesMap?: Record<string, any>) {
+  if (themesMap) {
+    themes = themesMap;
+  }
   const initTheme = getTheme();
   if (themes.hasOwnProperty(initTheme)) {
     setTheme(themes[initTheme]);
   } else {
     setTheme(themes["light"]);
   }
+}
+
+function detectOSTheme() {
+  if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
+    return "dark";
+  }
+  return "light";
 }

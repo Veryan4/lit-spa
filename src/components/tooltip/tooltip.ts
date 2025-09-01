@@ -56,6 +56,9 @@ export class ToolTipComponent extends LitElement {
   offsetY = 0;
 
   @property({ type: Number })
+  offset = 4;
+
+  @property({ type: Number })
   positionX?: number;
 
   @property({ type: Number })
@@ -148,8 +151,22 @@ export class ToolTipComponent extends LitElement {
         placement,
         this.strategy,
       );
-      const x = this.positionX ?? position.x + this.offsetX;
-      const y = this.positionY ?? position.y + this.offsetY;
+      let extraXOffSet = 0;
+      let extraYOffSet = 0;
+      if (placement.startsWith("left")) {
+        extraXOffSet -= this.offset;
+      }
+      if (placement.startsWith("right")) {
+        extraXOffSet += this.offset;
+      }
+      if (placement.startsWith("top")) {
+        extraYOffSet -= this.offset;
+      }
+      if (placement.startsWith("bottom")) {
+        extraYOffSet += this.offset;
+      }
+      const x = this.positionX ?? position.x + this.offsetX + extraXOffSet;
+      const y = this.positionY ?? position.y + this.offsetY + extraYOffSet;
       Object.assign(floating.style, {
         left: `${x}px`,
         top: `${y}px`,
