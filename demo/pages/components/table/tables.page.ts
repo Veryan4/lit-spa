@@ -1,7 +1,8 @@
 import { LitElement, html, css } from "lit";
 import { customElement } from "lit/decorators.js";
-import { TranslationController } from "../../../src";
-import "../../demo-tools";
+import { TranslationController } from "../../../../src";
+import { CSSVar } from "/@/demo-section/css-vars";
+import "../../../demo-tools";
 import "./table-demo";
 import "./local-table-demo";
 import "./infinite-table-demo";
@@ -13,19 +14,60 @@ class TablesPageDemo extends LitElement {
       .description {
         margin: 1rem 0;
       }
+      h3.title {
+        margin-top: 4rem;
+      }
     `,
   ];
 
   private i18n = new TranslationController(this);
 
+  tableCSSVariables: CSSVar[] = [
+    {
+      name: "--table-border-color",
+      default: "--secondary-color or black",
+      description: "The color of the lines of the table",
+    },
+    {
+      name: "--table-cell-background-color",
+      default: "unset",
+      description: "The background color of the rows of the table",
+    },
+    {
+      name: "--table-column-background-color",
+      default: "--input-fill or #E8E8E8",
+      description: "The background color of the column row of the table",
+    },
+    {
+      name: "--pagination-color",
+      default: "--secondary-color or black",
+      description: "The color of the page numbers",
+    },
+    {
+      name: "--pagination-background",
+      default: "--secondary-background-color or white",
+      description: "The color surrounding the page numbers",
+    },
+    {
+      name: "--pagination-selected-color",
+      default: "--secondary-background-color or white",
+      description: "The color of the selected page number",
+    },
+    {
+      name: "--pagination-selected-background",
+      default: "--secondary-color or black",
+      description: "The color of the selected page number",
+    },
+  ];
+
   render() {
     return html`
-      <h2>Table</h2>
+      <h3>Standard</h3>
       <div class="description">
         A standard responsive table which styling can be customized.
       </div>
       <demo-section
-        .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/table/table-demo.ts"}
+        .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/components/table/table-demo.ts"}
         .documentation=${[
           {
             property: "columns",
@@ -75,16 +117,17 @@ class TablesPageDemo extends LitElement {
               "The copy displayed in the table which can be replaces with copy from another language.",
           },
         ]}
+        .cssVariables=${this.tableCSSVariables}
       >
         <demo-table></demo-table>
       </demo-section>
-      <h2>Local Table</h2>
+      <h3 class="title">Local Table</h3>
       <div class="description">
         A table which can perform efficient searching, sorting, and filtering on
         data that is available on the client side.
       </div>
       <demo-section
-        .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/table/local-table-demo.ts"}
+        .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/components/table/local-table-demo.ts"}
         .documentation=${[
           {
             property: "columns",
@@ -171,16 +214,54 @@ class TablesPageDemo extends LitElement {
               "The copy displayed in the table which can be replaces with copy from another language.",
           },
         ]}
+        .cssVariables=${[
+          ...this.tableCSSVariables,
+          {
+            name: "--pagination-color",
+            default: "--secondary-color or black",
+            description: "The color of the page numbers",
+          },
+          {
+            name: "--pagination-background",
+            default: "--secondary-background-color or white",
+            description: "The color surrounding the page numbers",
+          },
+          {
+            name: "--pagination-selected-color",
+            default: "--secondary-background-color or white",
+            description: "The color of the selected page number",
+          },
+          {
+            name: "--pagination-selected-background",
+            default: "--secondary-color or black",
+            description: "The color of the selected page number",
+          },
+          {
+            name: "--search-font-family",
+            default: "--font-family",
+            description: "The font family of the search input",
+          },
+          {
+            name: "--search-font-size",
+            default: "--font-size",
+            description: "The size of the font of the search input",
+          },
+          {
+            name: "--search-border-color",
+            default: "#7aaaf6",
+            description: "The border color when the search input is selected",
+          },
+        ]}
       >
         <demo-local-table></demo-local-table>
       </demo-section>
-      <h2>Infinite Table</h2>
+      <h3 class="title">Infinite Table</h3>
       <div class="description">
         A table which can efficiently load and render additional data from a
         server response when scrolling.
       </div>
       <demo-section
-        .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/table/infinite-table-demo.ts"}
+        .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/components/table/infinite-table-demo.ts"}
         .documentation=${[
           {
             property: "columns",
@@ -224,6 +305,7 @@ class TablesPageDemo extends LitElement {
               "The copy displayed in the table which can be replaces with copy from another language.",
           },
         ]}
+        .cssVariables=${this.tableCSSVariables}
       >
         <demo-infinite-table></demo-infinite-table>
       </demo-section>

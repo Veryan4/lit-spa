@@ -17,7 +17,7 @@ export const routes: Route[] = [
       import("./pages/state-management/state-management.page").then(
         () => html`<demo-state-management></demo-state-management>`,
       ),
-    hashes: ["router", "http", "translations", "theme"],
+    hashes: ["router", "http", "translations", "theme", "class"],
   },
   {
     name: "components",

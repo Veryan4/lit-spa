@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { customElement } from "lit/decorators.js";
-import { TranslationController } from "../../demo-tools";
-import "../../demo-tools";
+import { TranslationController } from "../../../demo-tools";
+import "../../../demo-tools";
 import "./loader-demo";
 
 @customElement("demo-loader")
@@ -21,7 +21,7 @@ class LoaderPage extends LitElement {
       <h2>Loader</h2>
       <div class="description">A loading spinner which can be customized.</div>
       <demo-section
-        .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/loader/loader-demo.ts"}
+        .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/components/loader/loader-demo.ts"}
         .documentation=${[
           {
             property: "styleInfo",

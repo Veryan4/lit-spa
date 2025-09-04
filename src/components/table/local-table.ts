@@ -86,6 +86,7 @@ export class LocalTableComponent extends LitElement {
   render() {
     return html`
       <input
+        class="search-input"
         type="search"
         .value=${this.searchText ?? ""}
         placeholder=${this.labels.searchPlaceholder}

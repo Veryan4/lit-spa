@@ -1,12 +1,20 @@
-import { LitElement, html } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement } from "lit/decorators.js";
-import { TranslationController, httpService } from "../../demo-tools";
-import "../../demo-tools";
+import { TranslationController, httpService } from "../../../demo-tools";
+import "../../../demo-tools";
 
 type ToDo = { userId: string; id: number; title: string; completed: boolean };
 
 @customElement("http-demo")
 class HttpDemo extends LitElement {
+  static styles = [
+    css`
+      button {
+        cursor: pointer;
+      }
+    `,
+  ];
+
   private i18n = new TranslationController(this);
   private todos: ToDo[] = [];
 

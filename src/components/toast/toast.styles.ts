@@ -9,7 +9,10 @@ export const styles = css`
     flex-direction: column;
     align-items: flex-end;
     z-index: 10000;
-    font-family: var(--font-family, "Roboto Sans", sans-serif);
+    font-family: var(
+      --toast-font-family,
+      var(--font-family, "Roboto Sans", sans-serif)
+    );
   }
 
   .toast {
@@ -27,7 +30,7 @@ export const styles = css`
   }
 
   .toast.error .toast-wrap {
-    background: crimson;
-    color: #fff;
+    background: var(--toast-error-background, crimson);
+    color: var(--toast-error-color, #fff);
   }
 `;

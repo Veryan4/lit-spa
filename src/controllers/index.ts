@@ -7,3 +7,4 @@ export {
 } from "./translation.controller";
 export { ThemeController } from "./theme.controller";
 export { HashController } from "./hash.controller";
+export { StateController } from "./state.controller";

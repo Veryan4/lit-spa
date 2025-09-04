@@ -103,7 +103,7 @@ export class TableComponent extends LitElement {
         )}
       </div>
     `;
-  }
+  } // replace row.id by either index or row id getter
 
   renderFilter(column: TableColumn) {
     return column.filterType

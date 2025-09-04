@@ -2,6 +2,7 @@ import { LitElement, html } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { defaultStyles, githubStyles, styles } from "./hl-js.styles";
 import HLJS from "highlight.js";
+import { ThemeController } from "../demo-tools";
 
 @customElement("hl-js")
 export class HLJSComponent extends LitElement {
@@ -9,9 +10,6 @@ export class HLJSComponent extends LitElement {
 
   @property({ type: String })
   url: string = "";
-
-  @property({ type: Boolean })
-  isDarkMode = false;
   @property({ type: String })
   showBorder = true;
   @property({ type: String })
@@ -23,6 +21,8 @@ export class HLJSComponent extends LitElement {
 
   @query("code")
   codeElement: HTMLElement;
+
+  private theme = new ThemeController(this);
 
   constructor() {
     super();
@@ -50,9 +50,9 @@ export class HLJSComponent extends LitElement {
     setTimeout(() => this.fetchFiles(fileURL, startLine, endLine));
 
     return html`
-      <div class="code-container" style="max-width:80vw;">
+      <div class="code-container" style="max-width:80dvw;">
         <div
-          class="file file-${this.isDarkMode ? "dark" : "light"}"
+          class="file file-${this.theme.value == "dark" ? "dark" : "light"}"
           style="${this.showBorder ? "" : "border:0"}"
         >
           <div class="file-data">
@@ -67,13 +67,13 @@ export class HLJSComponent extends LitElement {
 
           ${this.showFileMeta
             ? html`<div
-                class="file-meta file-meta-${this.isDarkMode
+                class="file-meta file-meta-${this.theme.value == "dark"
                   ? "dark"
                   : "light"}"
                 style="${this.showBorder ? "" : "border:0"}"
               >
-                <a target="_blank" href="${fileURL}" style="float:right"
-                  >view raw</a
+                <a target="_blank" href="${this.url}" style="float:right"
+                  >view</a
                 >
                 <a target="_blank" href="${this.url}"
                   >${decodeURIComponent(

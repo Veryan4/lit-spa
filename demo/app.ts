@@ -7,6 +7,7 @@ import {
   TranslationController,
   hashService,
   routerService,
+  themeService,
 } from "./demo-tools";
 import { routes } from "./app.routes";
 import { styles } from "./app.styles";
@@ -71,6 +72,11 @@ class LitApp extends LitElement {
       </div>
       <lit-spa-toast></lit-spa-toast>
     `;
+  }
+
+  constructor() {
+    super();
+    themeService.registerThemes();
   }
 
   protected shouldUpdate(

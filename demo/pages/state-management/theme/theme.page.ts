@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { customElement } from "lit/decorators.js";
-import { TranslationController } from "../../demo-tools";
-import "../../demo-tools";
+import { TranslationController } from "../../../demo-tools";
+import "../../../demo-tools";
 import "./theme-demo";
 
 @customElement("demo-theme")
@@ -23,7 +23,7 @@ class ThemePage extends LitElement {
         across isolated components.
       </div>
       <demo-section
-        .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/theme/theme-demo.ts"}
+        .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/state-management/theme/theme-demo.ts"}
         .documentation=${[]}
       >
         <theme-demo></theme-demo>

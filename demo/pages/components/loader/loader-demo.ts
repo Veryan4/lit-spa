@@ -1,6 +1,6 @@
 import { LitElement, html } from "lit";
 import { customElement } from "lit/decorators.js";
-import "../../demo-tools";
+import "../../../demo-tools";
 
 @customElement("loader-demo")
 class LoaderDemo extends LitElement {

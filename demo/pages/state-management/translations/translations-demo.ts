@@ -1,10 +1,18 @@
-import { LitElement, html } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement } from "lit/decorators.js";
-import { TranslationController, translateService } from "../../demo-tools";
-import "../../demo-tools";
+import { TranslationController, translateService } from "../../../demo-tools";
+import "../../../demo-tools";
 
 @customElement("translations-demo")
 class TranslationsDemo extends LitElement {
+  static styles = [
+    css`
+      button {
+        cursor: pointer;
+      }
+    `,
+  ];
+
   private i18n = new TranslationController(this);
 
   render() {

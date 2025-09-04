@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { customElement } from "lit/decorators.js";
-import { TranslationController } from "../../demo-tools";
-import "../../demo-tools";
+import { TranslationController } from "../../../demo-tools";
+import "../../../demo-tools";
 import "./tooltip-demo";
 
 @customElement("demo-tooltip")
@@ -22,7 +22,7 @@ class TablePage extends LitElement {
         A tooltip which can either be activate on hover or on click.
       </div>
       <demo-section
-        .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/tooltip/tooltip-demo.ts"}
+        .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/components/tooltip/tooltip-demo.ts"}
         .documentation=${[
           {
             property: "position",
@@ -41,6 +41,33 @@ class TablePage extends LitElement {
             description:
               "Wether the tooltip appeares when clicked or hovered upon",
             default: "hover",
+          },
+        ]}
+        .cssVariables=${[
+          {
+            name: "--tooltip-font-family",
+            default: "--font-family or Roboto sans serif",
+            description: "The font used for the tooltip.",
+          },
+          {
+            name: "--tooltip-font-size",
+            default: "12px",
+            description: "The font size used for the tooltip.",
+          },
+          {
+            name: "--tooltip-color",
+            default: "--toast-color or #fff",
+            description: "Color of the default tooltip",
+          },
+          {
+            name: "--tooltip-background",
+            default: "--secondary-background-color or white",
+            description: "Background color of the custom tooltip",
+          },
+          {
+            name: "--tooltip-default-background",
+            default: "--toast-background or #313131",
+            description: "Background color of the default tooltip",
           },
         ]}
       >

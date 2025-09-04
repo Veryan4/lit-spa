@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { customElement } from "lit/decorators.js";
-import { TranslationController } from "../../demo-tools";
-import "../../demo-tools";
+import { TranslationController } from "../../../demo-tools";
+import "../../../demo-tools";
 import "./http-demo";
 
 @customElement("demo-http")
@@ -25,7 +25,7 @@ class HttpPage extends LitElement {
         http responses
       </div>
       <demo-section
-        .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/http/http-demo.ts"}
+        .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/state-management/http/http-demo.ts"}
         .documentation=${[]}
       >
         <http-demo></http-demo>
