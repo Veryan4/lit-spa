@@ -2,10 +2,13 @@ import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { TranslationController } from "../../src";
-import { starSvg, codeSvg, dictionarySvg } from "./demo-svgs";
+import { starSvg, codeSvg, dictionarySvg, cssSvg } from "./demo-svgs";
+import { Documentation } from "./documentation";
+import { CSSVar } from "./css-vars";
 import "../../src";
 import "../hl-js/hl-js";
-import { Documentation } from "./documentation";
+import "./css-vars";
+import "./documentation";
 
 @customElement("demo-section")
 class DemoSectionDemo extends LitElement {
@@ -14,10 +17,9 @@ class DemoSectionDemo extends LitElement {
       .hide {
         display: none;
       }
-      .selected {
-        color: white;
-        background-color: black;
-        border-radius: 0.25rem;
+      .btn.selected {
+        color: var(--secondary-background-color);
+        background-color: var(--secondary-color);
       }
       .btn-wrap {
         display: flex;
@@ -30,6 +32,12 @@ class DemoSectionDemo extends LitElement {
         align-items: center;
         cursor: pointer;
         margin-right: 1rem;
+        border-radius: 0.25rem;
+        background-color: var(--input-fill);
+      }
+      .btn:hover {
+        color: var(--secondary-background-color);
+        background-color: var(--secondary-color);
       }
       .btn .svg-wrap {
         display: flex;
@@ -38,10 +46,11 @@ class DemoSectionDemo extends LitElement {
         width: 1rem;
       }
       .section-wrap {
-        max-height: 90vh;
-        max-width: 80vw;
+        max-height: 90dvh;
+        max-width: 80dvw;
+        min-height: 15dvh;
         overflow-y: scroll;
-        border: 1px solid black;
+        border: 1px solid var(--theme-color);
         border-radius: 0.25rem;
         padding: 0.5rem;
       }
@@ -55,6 +64,9 @@ class DemoSectionDemo extends LitElement {
 
   @property({ type: Array })
   documentation: Documentation[] = [];
+
+  @property({ type: Array })
+  cssVariables: CSSVar[] = [];
 
   @state()
   show = "demo";
@@ -88,6 +100,16 @@ class DemoSectionDemo extends LitElement {
               <div class="svg-wrap">${dictionarySvg()}</div>
             </div>`
           : ""}
+        ${this.cssVariables?.length
+          ? html`<div
+              class="btn ${classMap({ selected: this.show === "css" })}"
+              title="See Style variables"
+              @click=${() => (this.show = "css")}
+            >
+              <div>Style Vars</div>
+              <div class="svg-wrap">${cssSvg()}</div>
+            </div>`
+          : ""}
       </div>
       <div class="section-wrap">
         <div class=${classMap({ hide: this.show !== "demo" })}>
@@ -102,6 +124,11 @@ class DemoSectionDemo extends LitElement {
               <app-documentation
                 .documentation=${this.documentation}
               ></app-documentation>
+            </div>`
+          : ""}
+        ${this.cssVariables?.length
+          ? html`<div class=${classMap({ hide: this.show !== "css" })}>
+              <app-css-vars .variables=${this.cssVariables}></app-css-vars>
             </div>`
           : ""}
       </div>

@@ -1,6 +1,5 @@
 import { LitElement, html, css } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { classMap } from "lit/directives/class-map.js";
+import { customElement, property } from "lit/decorators.js";
 import { TranslationController } from "../../src";
 
 import "../../src";
@@ -19,8 +18,8 @@ class DocumentationDemo extends LitElement {
       .grid {
         grid-template-columns: 1fr 2fr;
         display: grid;
-        border-top: 1px solid black;
-        border-right: 1px solid black;
+        border-top: 1px solid var(--secondary-color);
+        border-right: 1px solid var(--secondary-color);
       }
       .doc {
         display: flex;
@@ -28,21 +27,22 @@ class DocumentationDemo extends LitElement {
         gap: 1rem;
         white-space: nowrap;
         padding: 0.5rem;
-        border-left: 1px solid black;
-        border-bottom: 1px solid black;
+        border-left: 1px solid var(--secondary-color);
+        border-bottom: 1px solid var(--secondary-color);
         min-height: 3rem;
+        text-wrap: wrap;
       }
       .class {
         display: flex;
-        color: rgb(111, 66, 193);
+        color: var(--theme-accent-1);
         font-weight: bold;
       }
       .attr {
-        color: rgb(0, 92, 197);
+        color: var(--theme-very-dark);
       }
       .unset {
         display: flex;
-        color: black;
+        color: var(--secondary-color);
         font-weight: 400;
       }
     `,

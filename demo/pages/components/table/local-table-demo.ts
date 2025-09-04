@@ -7,8 +7,8 @@ import {
   TableRow,
   TableSort,
   TranslationController,
-} from "../../demo-tools";
-import "../../demo-tools";
+} from "../../../demo-tools";
+import "../../../demo-tools";
 import tableData from "./data.json";
 
 @customElement("demo-local-table")
@@ -29,14 +29,7 @@ class LocalTableDemo extends LitElement {
     },
     {
       field: "first_name",
-      name: " First Name",
-      isFilterable: true,
-      isSortable: true,
-      isSearchable: true,
-    },
-    {
-      field: "last_name",
-      name: "Last Name",
+      name: "Name",
       isFilterable: true,
       isSortable: true,
       isSearchable: true,
@@ -95,6 +88,7 @@ class LocalTableDemo extends LitElement {
         .sortBy=${this.sortBy}
         .filterBy=${this.filterBy}
         .data=${this.data}
+        .columnStyles=${{ backgroundColor: "var(--theme-very-light)" }}
       ></lit-spa-local-table>
     `;
   }

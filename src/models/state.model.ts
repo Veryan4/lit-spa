@@ -15,7 +15,7 @@ export class State<T> {
   }
 
   subscribe(fn: (e: T) => any) {
-    const time = Date.now();
+    const time = performance.now();
     this.listeners.set(time, fn);
     if (this.value !== undefined) fn(this.getValue());
     const unsubscribe = () => this.listeners.delete(time);

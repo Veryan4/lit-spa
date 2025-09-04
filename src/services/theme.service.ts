@@ -14,6 +14,7 @@ export const themeService = {
 let themes: Record<string, any> = {
   light: {
     "--primary-color": "#2c2c2c",
+    "--secondary-color": "black",
     "--primary-background-color": "#fafafa",
     "--secondary-background-color": "white",
     "--image-color": "unset",
@@ -24,6 +25,7 @@ let themes: Record<string, any> = {
   },
   dark: {
     "--primary-color": "#fafafa",
+    "--secondary-color": "white",
     "--primary-background-color": "#2c2c2c",
     "--secondary-background-color": "black",
     "--image-color": "invert(100%)",

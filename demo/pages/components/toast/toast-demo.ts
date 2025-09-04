@@ -1,10 +1,18 @@
-import { LitElement, html } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement } from "lit/decorators.js";
-import { toastService } from "../../demo-tools";
-import "../../demo-tools";
+import { toastService } from "../../../demo-tools";
+import "../../../demo-tools";
 
 @customElement("toast-demo")
 class ToastDemo extends LitElement {
+  static styles = [
+    css`
+      button {
+        cursor: pointer;
+      }
+    `,
+  ];
+
   render() {
     return html`
       <div class="body">

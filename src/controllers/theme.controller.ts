@@ -17,7 +17,9 @@ export class ThemeController {
   }
 
   hostConnected() {
-    this.unsubscribe = themeService.state.subscribe(this._changeTheme);
+    this.unsubscribe = themeService.state.subscribe((t) =>
+      this._changeTheme(t),
+    );
   }
 
   hostDisconnected() {

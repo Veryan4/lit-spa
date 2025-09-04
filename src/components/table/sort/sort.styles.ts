@@ -23,7 +23,7 @@ export const styles = css`
 
   .sort-direction .sort-number {
     position: absolute;
-    color: white;
+    color: var(--secondary-background-color, white);
     bottom: 0.1rem;
     left: 0.35rem;
   }

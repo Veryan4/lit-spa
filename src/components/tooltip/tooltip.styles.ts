@@ -5,7 +5,10 @@ export const styles = css`
     visibility: hidden;
     z-index: 9999;
     border-radius: 4px;
-    background-color: var(--secondary-background-color);
+    background-color: var(
+      --tooltip-background-color,
+      var(--secondary-background-color, white)
+    );
     box-shadow:
       0px 2px 1px -1px rgba(0, 0, 0, 0.2),
       0px 1px 1px 0px rgba(0, 0, 0, 0.14),
@@ -16,10 +19,16 @@ export const styles = css`
 
   #floating.default {
     width: fit-content;
-    font-family: var(--font-family, "Roboto Sans", sans-serif);
+    font-family: var(
+      --tooltip-font-family,
+      var(--font-family, "Roboto Sans", sans-serif)
+    );
     font-size: var(--tooltip-font-size, 12px);
-    background: var(--toast-background, #313131);
-    color: var(--toast-color, #fff);
+    background: var(
+      --tooltip-default-background,
+      var(--toast-background, #313131)
+    );
+    color: var(--tooltip-color, var(--toast-color, #fff));
     border-radius: 6px;
     padding: 0;
   }

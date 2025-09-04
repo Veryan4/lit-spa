@@ -17,16 +17,23 @@ export const styles = css`
     display: flex;
     justify-content: center;
     align-items: center;
-    color: white;
-    background-color: black;
+    color: var(--pagination-color, var(--secondary-background-color, white));
+    background-color: var(
+      --pagination-background,
+      var(--secondary-color, black)
+    );
     border-radius: 100%;
     width: 1.5rem;
     height: 1.5rem;
   }
 
   .page.selected {
-    color: black;
-    background-color: white;
-    border: 1px black solid;
+    color: var(--pagination-selected-color, var(--secondary-color, black));
+    background-color: var(
+      --pagination-selected-background,
+      var(--secondary-background-color)
+    );
+    border: 1px var(--pagination-selected-color, var(--secondary-color, black))
+      solid;
   }
 `;

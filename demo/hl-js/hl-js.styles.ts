@@ -36,6 +36,36 @@ export const styles = css`
     border-top: 1px solid #555;
   }
 
+  .file-dark .hljs {
+    background-color: unset;
+    color: unset;
+  }
+  .file-dark .ts.hljs .hljs-tag .hljs-name {
+    color: #f7f7f7;
+  }
+
+  .file-dark .ts.hljs .hljs-tag .hljs-attr {
+    color: #f7f7f7;
+  }
+
+  .file-dark .hljs-subst,
+  .file-dark .hljs-tag,
+  .file-dark .hljs-tag .hljs-name,
+  .file-dark .hljs-tag .hljs-attr {
+    color: #f7f7f7;
+  }
+
+  .file-dark .hljs-string {
+    color: var(--theme-very-light);
+  }
+
+  .file-dark .hljs-meta,
+  .file-dark .hljs-attribute,
+  .file-dark .hljs-attr,
+  .file-dark .hljs-selector-class {
+    color: var(--theme-very-dark);
+  }
+
   .file .file-meta a {
     font-weight: 600;
     text-decoration: none;

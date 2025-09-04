@@ -1,7 +1,11 @@
 import { LitElement, html, css } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { TableColumn, TableRow, TranslationController } from "../../demo-tools";
-import "../../demo-tools";
+import {
+  TableColumn,
+  TableRow,
+  TranslationController,
+} from "../../../demo-tools";
+import "../../../demo-tools";
 import tableData from "./data.json";
 
 @customElement("demo-infinite-table")
@@ -12,8 +16,7 @@ class InfiniteTableDemo extends LitElement {
 
   columns: TableColumn[] = [
     { field: "id", name: "ID" },
-    { field: "first_name", name: " First Name" },
-    { field: "last_name", name: "Last Name" },
+    { field: "first_name", name: "Name" },
     { field: "email", name: "Email" },
     { field: "gender", name: "Gender" },
     { field: "ip_address", name: "IP Address" },
@@ -36,6 +39,7 @@ class InfiniteTableDemo extends LitElement {
         .columns=${this.columns}
         .data=${this.chunkedData}
         @scrolled=${this.onScroll}
+        .columnStyles=${{ backgroundColor: "var(--theme-very-light)" }}
       ></lit-spa-infinite-table>
     `;
   }

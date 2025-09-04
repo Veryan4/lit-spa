@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { customElement } from "lit/decorators.js";
-import { TranslationController } from "../../demo-tools";
-import "../../demo-tools";
+import { TranslationController } from "../../../demo-tools";
+import "../../../demo-tools";
 import "./translations-demo";
 
 @customElement("demo-translations")
@@ -26,7 +26,7 @@ class TranslationsPage extends LitElement {
         behavior.
       </div>
       <demo-section
-        .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/translations/translations-demo.ts"}
+        .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/state-management/translations/translations-demo.ts"}
         .documentation=${[]}
       >
         <translations-demo></translations-demo>
