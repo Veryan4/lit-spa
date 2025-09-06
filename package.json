@@ -1,6 +1,6 @@
 {
   "name": "@veryan/lit-spa",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "license": "MIT",
   "description": "A lib for using lit.dev as an Single Page Application",
   "author": "Veryan Goodship",
