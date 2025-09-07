@@ -10,9 +10,6 @@ import { compression } from "vite-plugin-compression2";
 export default defineConfig((config) => {
   if (config.mode == "lib") {
     return {
-      preview: {
-        port: 3000,
-      },
       build: {
         outDir: "dist/lib",
         target: "esnext",
@@ -27,7 +24,7 @@ export default defineConfig((config) => {
         },
         exclude: ["demo/**"],
       },
-      plugins: [dts()],
+      plugins: [dts({ tsconfigPath: "./tsconfig.lib.json" })],
       publicDir: false,
     };
   }

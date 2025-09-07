@@ -6,7 +6,6 @@ export class StateController<T> {
   private unsubscribe?: () => boolean;
   private state: State<T>;
   value: T;
-  soundPlaying = false;
 
   constructor(host: ReactiveControllerHost, state: State<T>) {
     this.host = host;
@@ -25,5 +24,9 @@ export class StateController<T> {
 
   hostDisconnected(): void {
     this.unsubscribe?.();
+  }
+
+  update(value: T) {
+    this.state.update(value);
   }
 }

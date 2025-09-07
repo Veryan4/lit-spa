@@ -26,10 +26,6 @@ export class State<T> {
   }
 
   subscribeOnce(fn: (e: T) => any) {
-    if (this.value !== undefined) {
-      fn(this.value);
-      return;
-    }
     this.oneTimeListeners.push(fn);
   }
 
