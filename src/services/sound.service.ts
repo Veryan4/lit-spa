@@ -21,11 +21,10 @@ function toggleSound(): void {
   const enabled = getSoundEnabled();
   if (enabled) {
     localStorage.removeItem(SOUND_STORAGE_KEY);
-    state.update(!enabled);
   } else {
     localStorage.setItem(SOUND_STORAGE_KEY, "on");
-    state.update(enabled);
   }
+  state.update(!enabled);
 }
 
 function playSound(sound: HTMLAudioElement): void {
