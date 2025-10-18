@@ -119,7 +119,7 @@ export class LocalTableComponent extends LitElement {
     this.indexAllData(this.data);
   }
 
-  indexAllData(tableData: TableRow[]) {
+  async indexAllData(tableData: TableRow[]) {
     this.dataById.clear();
     this.searchIndex.clear();
     this.filterIndex.clear();
@@ -132,12 +132,17 @@ export class LocalTableComponent extends LitElement {
         this.filterIndex.set(col.field, new Map<string, Set<keyof TableRow>>());
       }
     });
-    tableData.forEach((row, i) => {
-      setTimeout(() => this.updateIndex(row, tableData.length - 1 == i));
-    });
+    const searchableFields = this.columns.reduce((acc, col) => {
+      if (col.isSearchable) acc.push(col.field);
+      return acc;
+    }, [] as string[]);
+    tableData.map((row) =>
+      setTimeout(() => this.updateIndex(row, searchableFields)),
+    );
+    setTimeout(() => this.table.updateFilterOptions(this.filterIndex));
   }
 
-  updateIndex(rowData: TableRow, isLastRow: boolean) {
+  async updateIndex(rowData: TableRow, searchableFields: string[]) {
     const dataId = rowData[this.dataIdField];
     this.dataById.set(dataId, rowData);
     this.filterIndex.forEach((index, field) => {
@@ -149,11 +154,7 @@ export class LocalTableComponent extends LitElement {
       }
     });
     const subStrings = new Set<string>();
-    const searchableFields = this.columns.reduce((acc, col) => {
-      if (col.isSearchable) acc.push(col.field);
-      return acc;
-    }, [] as string[]);
-    searchableFields.forEach((field) => {
+    searchableFields.map((field) => {
       let i, j;
       const values = String(rowData[field])
         .toLowerCase()
@@ -175,9 +176,7 @@ export class LocalTableComponent extends LitElement {
         this.searchIndex.set(subString, new Set([dataId]));
       }
     });
-    if (isLastRow) {
-      this.table.updateFilterOptions(this.filterIndex);
-    }
+    return;
   }
 
   query() {
