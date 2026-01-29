@@ -35,12 +35,14 @@ class InfiniteTableDemo extends LitElement {
       this.chunkedData = this.retrieveDataChunk();
     }
     return html`
-      <lit-spa-infinite-table
-        .columns=${this.columns}
-        .data=${this.chunkedData}
-        @scrolled=${this.onScroll}
-        .columnStyles=${{ backgroundColor: "var(--theme-very-light)" }}
-      ></lit-spa-infinite-table>
+      <div style="height:100%;">
+        <lit-spa-infinite-table
+          .columns=${this.columns}
+          .data=${this.chunkedData}
+          @scrolled=${this.onScroll}
+          .columnStyles=${{ backgroundColor: "var(--theme-very-light)" }}
+        ></lit-spa-infinite-table>
+      </div>
     `;
   }
 
