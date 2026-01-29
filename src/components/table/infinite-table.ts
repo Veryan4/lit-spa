@@ -1,6 +1,5 @@
-import { LitElement, html } from "lit";
+import { LitElement, PropertyValues, css, html } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
-import { styleMap } from "lit/directives/style-map.js";
 import { TableColumn, TableRow, defaultTableLabels } from "./table";
 import { styles } from "./table.styles";
 
@@ -9,7 +8,22 @@ import "./table";
 
 @customElement("lit-spa-infinite-table")
 export class InfiniteTableComponent extends LitElement {
-  static styles = [styles];
+  static styles = [
+    styles,
+    css`
+      #scroller {
+        overflow-x: hidden;
+        overflow-y: scroll;
+        max-height: 80dvh;
+      }
+      lit-spa-table {
+        display: block;
+      }
+      #bottom {
+        height: 1px;
+      }
+    `,
+  ];
 
   @property({ type: Array })
   columns: TableColumn[];
@@ -32,22 +46,28 @@ export class InfiniteTableComponent extends LitElement {
   @property({ type: Object })
   labels = defaultTableLabels;
 
+  @query("#scroller")
+  scroller?: HTMLElement;
+
   @query("#bottom")
-  bottom: Element;
+  bottom?: Element;
 
   private observer?: IntersectionObserver;
+  private loadLocked = false;
+  private awaitingPage = false;
+  private exhausted = false;
+
+  private readonly onIntersect = (entry: IntersectionObserverEntry) => {
+    if (!entry.isIntersecting) {
+      this.loadLocked = false;
+      return;
+    }
+    this.requestNextPage();
+  };
 
   render() {
     return html`
-      <div
-        style=${styleMap({
-          "content-visibility": " auto",
-          "contain-intrinsic-height": "100dvh",
-          "overflow-y": "scroll",
-          "overflow-x": "hidden",
-          "max-height": "80dvh",
-        })}
-      >
+      <div id="scroller">
         <lit-spa-table
           .columns=${this.columns}
           .data=${this.data}
@@ -68,18 +88,45 @@ export class InfiniteTableComponent extends LitElement {
     `;
   }
 
-  firstUpdated(_changedProperties: any) {
-    super.firstUpdated(_changedProperties);
-    const options = {
-      root: this.isHostScrollable() ? this : null,
+  protected firstUpdated(): void {
+    if (!this.bottom) return;
+    const options: IntersectionObserverInit = {
+      root: this.scroller ?? null,
+      rootMargin: "0px 0px 100px 0px",
       ...(this.scrollOptions ?? {}),
     };
     this.observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        this.dispatchEvent(new Event("scrolled"));
-      }
+      this.onIntersect(entry);
     }, options);
+    this.armObserver();
+  }
+
+  protected updated(changed: PropertyValues<this>): void {
+    if (!changed.has("data")) return;
+    const previous = changed.get("data") as TableRow[] | undefined;
+    const nextCount = this.data?.length ?? 0;
+    const previousCount = previous?.length ?? 0;
+    this.loadLocked = false;
+    if (nextCount < previousCount) {
+      this.exhausted = false;
+    } else if (this.awaitingPage && nextCount === previousCount) {
+      this.exhausted = true;
+    }
+    this.awaitingPage = false;
+    this.armObserver();
+  }
+
+  private armObserver() {
+    if (!this.observer || !this.bottom) return;
+    this.observer.unobserve(this.bottom);
     this.observer.observe(this.bottom);
+  }
+
+  private requestNextPage() {
+    if (this.loadLocked || this.exhausted) return;
+    this.loadLocked = true;
+    this.awaitingPage = true;
+    this.dispatchEvent(new Event("scrolled"));
   }
 
   isHostScrollable() {
@@ -91,6 +138,7 @@ export class InfiniteTableComponent extends LitElement {
   }
 
   echoEvent(event: CustomEvent) {
+    event.stopPropagation();
     const options = {
       detail: event.detail,
       bubbles: true,

@@ -37,7 +37,8 @@ export const styles = css`
     visibility: visible;
   }
 
-  #reference.default:hover + #floating.default {
+  #reference.default:hover + #floating.default,
+  #reference.default:focus-within + #floating.default {
     visibility: visible;
   }
 

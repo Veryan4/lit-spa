@@ -1,7 +1,13 @@
 import { css } from "lit";
 
 export const styles = css`
-  .filter {
+  .filter-button {
+    display: flex;
+    align-items: center;
+    border: none;
+    background: transparent;
+    color: inherit;
+    padding: 0;
     cursor: pointer;
   }
   .filter-form {

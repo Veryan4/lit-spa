@@ -9,6 +9,10 @@ export const styles = css`
       var(--table-border-color, var(--secondary-color, black));
   }
 
+  .row {
+    display: contents;
+  }
+
   .table .column,
   .table .cell {
     white-space: nowrap;

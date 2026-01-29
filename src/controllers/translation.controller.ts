@@ -68,13 +68,18 @@ export class TranslationController {
     this.unsubscribe?.();
   }
 
+  private loadGeneration = 0;
+
   _changeLanguage = (lang: string) => {
     this.language = lang;
-    this.processLoad();
+    void this.processLoad();
   };
 
   async processLoad() {
-    this.translations = await this.loadTranslations(this.language, this.scope);
+    const generation = ++this.loadGeneration;
+    const translations = await this.loadTranslations(this.language, this.scope);
+    if (generation !== this.loadGeneration) return;
+    this.translations = translations;
     this.hasLoadedTranslations = true;
     this.host.requestUpdate();
   }
@@ -121,8 +126,9 @@ class TranslationDirective extends Directive {
 const translationDirective = directive(TranslationDirective);
 
 class NumberDirective extends Directive {
-  private currentLanguage: string;
-  private options: Intl.NumberFormatOptions;
+  private currentLanguage?: string;
+  private options?: Intl.NumberFormatOptions;
+  private value?: number;
 
   update(
     _part: ChildPart,
@@ -132,21 +138,25 @@ class NumberDirective extends Directive {
   }
 
   render(number: number, language: string, options?: Intl.NumberFormatOptions) {
-    if (this.currentLanguage === language && this.options === options) {
+    if (
+      this.currentLanguage === language &&
+      this.options === options &&
+      this.value === number
+    ) {
       return noChange;
     }
     this.currentLanguage = language;
-    if (options) {
-      this.options = options;
-    }
+    this.value = number;
+    this.options = options;
     return translateService.formatNumber(number, language, options);
   }
 }
 const numberDirective = directive(NumberDirective);
 
 class DateDirective extends Directive {
-  private currentLanguage: string;
-  private options: Intl.DateTimeFormatOptions;
+  private currentLanguage?: string;
+  private options?: Intl.DateTimeFormatOptions;
+  private time?: number;
 
   update(
     _part: ChildPart,
@@ -156,13 +166,17 @@ class DateDirective extends Directive {
   }
 
   render(date: Date, language: string, options?: Intl.DateTimeFormatOptions) {
-    if (this.currentLanguage === language && this.options === options) {
+    const time = date?.getTime();
+    if (
+      this.currentLanguage === language &&
+      this.options === options &&
+      this.time === time
+    ) {
       return noChange;
     }
     this.currentLanguage = language;
-    if (options) {
-      this.options = options;
-    }
+    this.time = time;
+    this.options = options;
     return translateService.formatDate(date, language, options);
   }
 }

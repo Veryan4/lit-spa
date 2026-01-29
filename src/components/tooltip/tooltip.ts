@@ -1,4 +1,4 @@
-import { LitElement, html } from "lit";
+import { LitElement, html, nothing } from "lit";
 import {
   customElement,
   property,
@@ -41,7 +41,7 @@ export class ToolTipComponent extends LitElement {
   text: string;
 
   @property({ type: String })
-  position: TooltipPosition;
+  position: TooltipPosition = "bottom";
 
   @property({ type: String })
   strategy: TooltipStrategy = "absolute";
@@ -67,6 +67,14 @@ export class ToolTipComponent extends LitElement {
   @state()
   isOpen = false;
 
+  private readonly onWindowClick = (event: MouseEvent) => {
+    void this._clickEventHandler(event);
+  };
+
+  private readonly onKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape" && this.isOpen) this.isOpen = false;
+  };
+
   constructor() {
     super();
   }
@@ -75,8 +83,14 @@ export class ToolTipComponent extends LitElement {
     return html` <div
         id="reference"
         class="${classMap({ default: this.text })}"
+        tabindex=${this.text ? "0" : nothing}
+        aria-describedby="floating"
+        aria-expanded=${
+          this.mode === "click" ? String(this.isOpen) : nothing
+        }
         @click=${this.openFloating}
         @mouseover=${this.openHover}
+        @focusin=${this.openHover}
       >
         ${this.text
           ? html`<slot></slot>`
@@ -84,6 +98,7 @@ export class ToolTipComponent extends LitElement {
       </div>
       <div
         id="floating"
+        role="tooltip"
         class="${classMap({ default: this.text, open: this.isOpen })}"
         style="${styleMap({ position: this.strategy })}"
       >
@@ -95,17 +110,20 @@ export class ToolTipComponent extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this.assignFloatingPosition();
     if (this.mode == "click") {
-      window.addEventListener("click", (e) => this._clickEventHandler(e));
+      window.addEventListener("click", this.onWindowClick);
     }
+    window.addEventListener("keydown", this.onKeyDown);
   }
 
   disconnectedCallback() {
+    window.removeEventListener("click", this.onWindowClick);
+    window.removeEventListener("keydown", this.onKeyDown);
     super.disconnectedCallback();
-    if (this.mode == "click") {
-      window.removeEventListener("click", (e) => this._clickEventHandler(e));
-    }
+  }
+
+  protected firstUpdated(): void {
+    void this.assignFloatingPosition();
   }
 
   async _clickEventHandler(e: any) {
@@ -142,6 +160,7 @@ export class ToolTipComponent extends LitElement {
   }
 
   async assignFloatingPosition() {
+    if (!this.position || !this.referenceElement) return;
     const floating = await this.floatingElement;
     const placements = this.position.split(" ");
     for (const placement of placements) {

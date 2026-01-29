@@ -16,7 +16,6 @@ export class StateController<T> {
 
   hostConnected(): void {
     this.unsubscribe = this.state.subscribe((s) => {
-      console.log(s);
       this.value = s;
       this.host.requestUpdate();
     });

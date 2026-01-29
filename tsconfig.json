@@ -4,7 +4,7 @@
     "useDefineForClassFields": false,
     "module": "ESNext",
     "lib": ["ESNext", "DOM", "DOM.iterable", "WebWorker"],
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "strict": true,
     "sourceMap": true,
     "jsx": "preserve",
@@ -13,14 +13,13 @@
     "noEmit": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noImplicitReturns": false,
+    "noImplicitReturns": true,
     "skipLibCheck": true,
     "strictPropertyInitialization": false,
     "experimentalDecorators": true,
-    "types": ["vite/client", "@types/jest"],
-    "baseUrl": ".",
+    "types": ["vite/client"],
     "paths": {
-      "/@/*": ["src/*", "demo/*"]
+      "/@/*": ["./src/*", "./demo/*"]
     }
   },
   "include": [

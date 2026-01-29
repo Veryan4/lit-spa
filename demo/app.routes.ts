@@ -12,7 +12,7 @@ export const routes: Route[] = [
   },
   {
     name: "state-management",
-    pattern: "state-management",
+    pattern: ["state-management", "state-management/*"],
     component: () =>
       import("./pages/state-management/state-management.page").then(
         () => html`<demo-state-management></demo-state-management>`,

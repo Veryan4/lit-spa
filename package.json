@@ -1,6 +1,6 @@
 {
   "name": "@veryan/lit-spa",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "license": "MIT",
   "description": "A lib for using lit.dev as an Single Page Application",
   "author": "Veryan Goodship",
@@ -25,8 +25,28 @@
   "types": "./dist/lib/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/lib/lit-spa.js",
-      "require": "./dist/lib/lit-spa.js"
+      "types": "./dist/lib/index.d.ts",
+      "import": "./dist/lib/lit-spa.js"
+    },
+    "./router": {
+      "types": "./dist/lib/entries/router.d.ts",
+      "import": "./dist/lib/router.js"
+    },
+    "./http": {
+      "types": "./dist/lib/entries/http.d.ts",
+      "import": "./dist/lib/http.js"
+    },
+    "./state": {
+      "types": "./dist/lib/entries/state.d.ts",
+      "import": "./dist/lib/state.js"
+    },
+    "./services": {
+      "types": "./dist/lib/entries/services.d.ts",
+      "import": "./dist/lib/services.js"
+    },
+    "./components": {
+      "types": "./dist/lib/entries/components.d.ts",
+      "import": "./dist/lib/components.js"
     }
   },
   "files": [
@@ -36,33 +56,31 @@
     "dev": "vite --mode=dev",
     "build-lib": "tsc --project tsconfig.lib.json && vite build --mode lib",
     "build": "tsc --project tsconfig.demo.json && vite build",
-    "lint": "eslint --ext .ts --ignore-pattern .gitignore --fix src",
+    "lint": "eslint src",
     "format": "prettier . --write",
-    "test": "jest src"
+    "test": "vitest run"
   },
   "devDependencies": {
-    "@types/jest": "29.5.14",
-    "@types/node": "^22.13.14",
-    "eslint": "^9.33.0",
-    "typescript-eslint": "8.40.0",
-    "eslint-plugin-lit": "^2.1.1",
-    "eslint-plugin-wc": "^3.0.1",
-    "@eslint/js": "9.33.0",
-    "jest": "29.7.0",
-    "prettier": "3.6.2",
-    "ts-jest": "29.4.1",
-    "typescript": "5.9.2",
-    "vite": "7.1.3",
-    "vite-plugin-dts": "4.5.4",
-    "@web/rollup-plugin-copy": "0.5.1",
-    "@web/rollup-plugin-html": "2.3.0",
-    "@lit-labs/rollup-plugin-minify-html-literals": "^0.1.0",
-    "rollup-plugin-summary": "3.0.1",
-    "@rollup/plugin-terser": "0.4.4",
-    "@rollup/plugin-node-resolve": "16.0.1",
-    "vite-plugin-compression2": "2.2.0"
+    "@eslint/js": "10.0.1",
+    "@lit-labs/rollup-plugin-minify-html-literals": "^0.2.0",
+    "@rollup/plugin-node-resolve": "16.0.3",
+    "@rollup/plugin-terser": "1.0.2",
+    "@types/node": "^26.6.6",
+    "@web/rollup-plugin-html": "4.0.0",
+    "eslint": "^10.14.0",
+    "eslint-plugin-lit": "^2.3.1",
+    "eslint-plugin-wc": "^3.1.0",
+    "highlight.js": "11.12.0",
+    "jsdom": "29.1.1",
+    "prettier": "3.9.10",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.1",
+    "vite": "8.3.5",
+    "vite-plugin-compression2": "2.5.4",
+    "vite-plugin-dts": "5.1.2",
+    "vitest": "5.0.5"
   },
   "dependencies": {
-    "lit": "3.3.1"
+    "lit": "3.3.3"
   }
 }

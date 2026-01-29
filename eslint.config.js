@@ -25,7 +25,10 @@ export default defineConfig([
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/ban-ts-comment": "off",
       "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-unused-vars": "off", // "seems to be a bug with '_'"
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" },
+      ],
       "no-prototype-builtins": "off",
     },
     settings: {

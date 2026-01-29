@@ -30,6 +30,9 @@ async function useLanguage(lang: string): Promise<any> {
 
 async function loadTranslations(lang: string, scope?: string) {
   const translationCacheKey = lang + (scope ? scope : NO_SCOPE_KEY);
+  if (!translationCache[lang]) {
+    translationCache[lang] = {};
+  }
   if (!translationCache[lang][translationCacheKey]) {
     const translations: Record<string, any> = await httpService.get(
       `/i18n/${scope ? scope + "/" : ""}${lang}.json`,

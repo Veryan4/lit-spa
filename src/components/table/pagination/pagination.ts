@@ -16,21 +16,25 @@ export class PaginationComponent extends LitElement {
   render() {
     return this.pagesCount > 1
       ? html`
-          <div class="pagination">
+          <div class="pagination" role="navigation" aria-label="Pagination">
             ${this.pageNumber > 1
-              ? html`<div
+              ? html`<button
+                  type="button"
                   class="back"
+                  aria-label="Previous page"
                   @click=${() => this.changePage(this.pageNumber - 1)}
                 >
                   &#8810;
-                </div>`
+                </button>`
               : ""}
-            <div
+            <button
+              type="button"
               class="first page ${classMap({ selected: 1 == this.pageNumber })}"
+              aria-current=${this.pageNumber === 1 ? "page" : "false"}
               @click=${() => this.changePage(1)}
             >
               1
-            </div>
+            </button>
             ${this.pagesCount > 5 && this.pageNumber > 3
               ? html`<div class="more">...</div>`
               : ""}
@@ -40,34 +44,42 @@ export class PaginationComponent extends LitElement {
                 newPage += 1;
               }
               return newPage < this.pagesCount && newPage > 1
-                ? html`<div
+                ? html`<button
+                    type="button"
                     class="page ${classMap({
                       selected: newPage == this.pageNumber,
                     })}"
+                    aria-current=${newPage == this.pageNumber ? "page" : "false"}
                     @click=${() => this.changePage(newPage)}
                   >
                     ${newPage}
-                  </div>`
+                  </button>`
                 : "";
             })}
             ${this.pagesCount > 5 && this.pageNumber < this.pagesCount - 2
               ? html`<div class="more">...</div>`
               : ""}
-            <div
+            <button
+              type="button"
               class="last page ${classMap({
                 selected: this.pagesCount == this.pageNumber,
               })}"
+              aria-current=${
+                this.pagesCount == this.pageNumber ? "page" : "false"
+              }
               @click=${() => this.changePage(this.pagesCount)}
             >
               ${this.pagesCount}
-            </div>
+            </button>
             ${this.pageNumber < this.pagesCount
-              ? html`<div
+              ? html`<button
+                  type="button"
                   class="next"
+                  aria-label="Next page"
                   @click=${() => this.changePage(this.pageNumber + 1)}
                 >
                   &#8811;
-                </div>`
+                </button>`
               : ""}
           </div>
         `

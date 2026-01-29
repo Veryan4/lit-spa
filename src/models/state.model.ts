@@ -3,6 +3,7 @@ export class State<T> {
   protected listeners = new Map<number, (e: T) => any>();
   protected oneTimeListeners: ((e: T) => any)[] = [];
   protected isEqual = (a: T, b: T) => a === b;
+  private nextListenerId = 0;
 
   constructor(isEqual?: (a: T, b: T) => boolean) {
     if (isEqual) {
@@ -11,17 +12,14 @@ export class State<T> {
   }
 
   getValue(): T {
-    return structuredClone(this.value);
+    return cloneStateValue(this.value);
   }
 
   subscribe(fn: (e: T) => any) {
-    let time = performance.now();
-    if (this.listeners.has(time)) {
-      time = this.incrementTime(time);
-    }
-    this.listeners.set(time, fn);
+    const id = this.nextListenerId++;
+    this.listeners.set(id, fn);
     if (this.value !== undefined) fn(this.getValue());
-    const unsubscribe = () => this.listeners.delete(time);
+    const unsubscribe = () => this.listeners.delete(id);
     return unsubscribe;
   }
 
@@ -41,11 +39,16 @@ export class State<T> {
     this.emit();
   }
 
-  private incrementTime(time: number): number {
-    time += 10000;
-    if (this.listeners.has(time)) {
-      return this.incrementTime(time);
-    }
-    return time;
+}
+
+function cloneStateValue<T>(value: T): T {
+  if (value === undefined || value === null) return value;
+  const type = typeof value;
+  if (type !== "object") return value;
+  if (typeof structuredClone !== "function") return value;
+  try {
+    return structuredClone(value);
+  } catch {
+    return value;
   }
 }

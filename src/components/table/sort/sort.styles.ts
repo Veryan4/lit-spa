@@ -3,6 +3,11 @@ import { css } from "lit";
 export const styles = css`
   .sort {
     cursor: pointer;
+    border: none;
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    font: inherit;
   }
 
   .sort-default {

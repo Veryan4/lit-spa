@@ -1,44 +1,51 @@
-import { State, Toast } from "../models";
+import { Toast } from "../models";
 
-const state = new State<Toast>();
+const queue: Toast[] = [];
+let pending: ((toast: Toast) => void) | undefined;
+
+function enqueue(toast: Toast) {
+  if (pending) {
+    const resolve = pending;
+    pending = undefined;
+    resolve(toast);
+    return;
+  }
+  queue.push(toast);
+}
 
 const pop = (async function* () {
-  let toast: Toast;
-  let resolve: (v: any) => void;
-  let promise = new Promise((r) => (resolve = r));
-  state.subscribe((t) => {
-    toast = t;
-    resolve(t);
-    promise = new Promise((r) => (resolve = r));
-  });
   while (true) {
-    await promise;
-    yield toast!;
+    const queued = queue.shift();
+    if (queued) {
+      yield queued;
+      continue;
+    }
+    yield await new Promise<Toast>((resolve) => {
+      pending = resolve;
+    });
   }
 })();
 
 export const toastService = { newToast, newError, customToast, pop };
 
 function newToast(text: string, properties?: Record<string, string | number>) {
-  const toast: Toast = {
+  enqueue({
     type: "success",
     duration: 3000,
     text,
     properties,
-  };
-  state.update(toast);
+  });
 }
 
 function newError(text: string, properties?: Record<string, string | number>) {
-  const toast: Toast = {
+  enqueue({
     type: "error",
     duration: 3000,
     text,
     properties,
-  };
-  state.update(toast);
+  });
 }
 
 function customToast(toast: Toast) {
-  state.update(toast);
+  enqueue(toast);
 }

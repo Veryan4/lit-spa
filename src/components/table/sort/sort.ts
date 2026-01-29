@@ -17,7 +17,12 @@ export class SortComponent extends LitElement {
   sortDirection: string;
 
   render() {
-    return html`<div class="sort" @click=${this.changeSort}>
+    return html`<button
+      type="button"
+      class="sort"
+      aria-label="Sort ${this.field}"
+      @click=${this.changeSort}
+    >
       <div
         class="sort-default ${classMap({
           show: !this.sortDirection,
@@ -35,7 +40,7 @@ export class SortComponent extends LitElement {
         ${this.sortSVG()}
         <div class="sort-number">${this.sortIndex + 1}</div>
       </div>
-    </div>`;
+    </button>`;
   }
 
   sortSVG(size = 16) {

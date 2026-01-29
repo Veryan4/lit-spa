@@ -20,7 +20,7 @@ export class ToastComponent extends LitElement {
   }
 
   render() {
-    return html`<div class="toast-container">
+    return html`<div class="toast-container" role="status" aria-live="polite">
       ${asyncAppend(toastService.pop, (t) => {
         const toast = t as Toast;
         const classes = { error: toast?.type === "error" };

@@ -4,5 +4,4 @@ dist
 dist-ssr
 *.local
 package
-package-lock.json
 veryan-lit-spa-*

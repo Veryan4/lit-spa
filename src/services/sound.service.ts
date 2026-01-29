@@ -28,8 +28,9 @@ function toggleSound(): void {
 }
 
 function playSound(sound: HTMLAudioElement): void {
+  const duration = Number.isFinite(sound.duration) ? sound.duration * 1000 : 0;
   clearTimeout(timeouts[sound.src]);
-  timeouts[sound.src] = setTimeout(() => {
-    sound.play();
-  }, sound.duration);
+  timeouts[sound.src] = window.setTimeout(() => {
+    void sound.play();
+  }, duration);
 }

@@ -1,4 +1,4 @@
-import { LitElement, html } from "lit";
+import { LitElement, PropertyValues, html } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import {
   TableColumn,
@@ -20,21 +20,22 @@ export const defaultLocalTableLabels = {
   tableLabels: defaultTableLabels,
 };
 
+const searchIndexBatchRows = 40;
+const searchIndexBatchMs = 12;
+
 @customElement("lit-spa-local-table")
 export class LocalTableComponent extends LitElement {
   static styles = [styles];
 
   private dataById = new Map<string, TableRow>();
-  private searchIndex = new Map<string, Set<keyof TableRow>>();
+  private searchIndex = new Map<string, Set<string>>();
   private filterIndex = new Map<
     keyof TableRow,
     Map<string, Set<keyof TableRow>>
   >();
-  private previousData?: TableRow[];
-
-  private previousSearchText?: string;
-  private previousFilterBy?: TableFilter[];
-  private previousSortBy?: TableSort[];
+  private visibleRows: TableRow[] = [];
+  private indexGeneration = 0;
+  private indexTimer?: ReturnType<typeof setTimeout>;
 
   pagesCount = 0;
 
@@ -50,7 +51,7 @@ export class LocalTableComponent extends LitElement {
   @property({ type: Array })
   data: TableRow[];
 
-  @property({ type: Array })
+  @property({ type: String })
   dataIdField: keyof TableRow;
 
   @property({ type: String })
@@ -97,7 +98,7 @@ export class LocalTableComponent extends LitElement {
         .columns=${this.columns}
         .sortBy=${this.sortBy}
         .filterBy=${this.filterBy}
-        .data=${this.query()}
+        .data=${this.visibleRows}
         .styleInfo=${this.styleInfo}
         .columnStyles=${this.columnStyles}
         .cellStyles=${this.cellStyles}
@@ -114,139 +115,197 @@ export class LocalTableComponent extends LitElement {
     `;
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    this.indexAllData(this.data);
+  protected willUpdate(changed: PropertyValues<this>): void {
+    if (
+      changed.has("data") ||
+      changed.has("columns") ||
+      changed.has("minSearchCharacters") ||
+      changed.has("dataIdField")
+    ) {
+      this.rebuildIndex(this.data ?? [], this.columns ?? []);
+    }
+
+    const criteriaChanged =
+      changed.has("searchText") ||
+      changed.has("filterBy") ||
+      changed.has("sortBy") ||
+      changed.has("data") ||
+      changed.has("searchOperator") ||
+      changed.has("minSearchCharacters");
+    if (
+      criteriaChanged &&
+      this.pageNumber !== 1 &&
+      !changed.has("pageNumber")
+    ) {
+      this.pageNumber = 1;
+    }
+
+    this.visibleRows = this.computeVisible();
   }
 
-  async indexAllData(tableData: TableRow[]) {
+  private rebuildIndex(tableData: TableRow[], columns: TableColumn[]) {
+    this.indexGeneration += 1;
+    const generation = this.indexGeneration;
+    clearTimeout(this.indexTimer);
     this.dataById.clear();
     this.searchIndex.clear();
     this.filterIndex.clear();
-    this.filterIndex.set(
-      "lit-spa-search",
-      new Map<string, Set<keyof TableRow>>(),
-    );
-    this.columns.forEach((col) => {
-      if (col.filterType) {
-        this.filterIndex.set(col.field, new Map<string, Set<keyof TableRow>>());
+    this.ensureFilterTypes(columns, tableData);
+    columns.forEach((col) => {
+      if (col.filterType || col.isFilterable) {
+        this.filterIndex.set(
+          col.field,
+          new Map<string, Set<keyof TableRow>>(),
+        );
       }
     });
-    const searchableFields = this.columns.reduce((acc, col) => {
-      if (col.isSearchable) acc.push(col.field);
-      return acc;
-    }, [] as string[]);
-    tableData.map((row) =>
-      setTimeout(() => this.updateIndex(row, searchableFields)),
-    );
-    setTimeout(() => this.table.updateFilterOptions(this.filterIndex));
+    const fields = columns
+      .filter((col) => col.isSearchable)
+      .map((col) => col.field);
+    let cursor = 0;
+
+    const indexBatch = () => {
+      if (generation !== this.indexGeneration || !this.isConnected) return;
+      const started = performance.now();
+      let indexed = 0;
+      let foundSearchHit = false;
+      while (
+        cursor < tableData.length &&
+        indexed < searchIndexBatchRows &&
+        performance.now() - started < searchIndexBatchMs
+      ) {
+        if (this.indexRow(tableData[cursor], fields)) foundSearchHit = true;
+        cursor += 1;
+        indexed += 1;
+      }
+      if (this.filterIndex.size) {
+        this.table?.updateFilterOptions(this.filterIndex);
+      }
+      const refreshSearch =
+        foundSearchHit && !!this.searchTerms(this.searchText);
+      const refreshFilter = this.filterBy.length > 0 && indexed > 0;
+      if (refreshSearch || refreshFilter) this.requestUpdate();
+      if (cursor < tableData.length) {
+        this.indexTimer = setTimeout(indexBatch, 0);
+      }
+    };
+
+    this.indexTimer = setTimeout(indexBatch, 0);
   }
 
-  async updateIndex(rowData: TableRow, searchableFields: string[]) {
-    const dataId = rowData[this.dataIdField];
-    this.dataById.set(dataId, rowData);
+  private indexRow(row: TableRow, fields: Array<keyof TableRow>): boolean {
+    const rawId = row[this.dataIdField];
+    if (rawId == null) return false;
+    const dataId = String(rawId);
+    this.dataById.set(dataId, row);
     this.filterIndex.forEach((index, field) => {
-      const filterSet = index.get(rowData[field]);
-      if (filterSet) {
-        filterSet.add(dataId);
-      } else {
-        index.set(rowData[field], new Set([dataId]));
-      }
+      const key = String(row[field] ?? "");
+      const filterSet = index.get(key);
+      if (filterSet) filterSet.add(rawId as keyof TableRow);
+      else index.set(key, new Set([rawId as keyof TableRow]));
     });
-    const subStrings = new Set<string>();
-    searchableFields.map((field) => {
-      let i, j;
-      const values = String(rowData[field])
+
+    const substrings = new Set<string>();
+    fields.forEach((field) => {
+      String(row[field] ?? "")
         .toLowerCase()
         .split(" ")
-        .filter((t) => t.length >= this.minSearchCharacters);
-      values.forEach((value) => {
-        for (i = 0; i < value.length; i++) {
-          for (j = value.length; j - i >= this.minSearchCharacters; j--) {
-            subStrings.add(value.slice(i, j));
+        .filter((word) => word.length >= this.minSearchCharacters)
+        .forEach((word) => {
+          for (let start = 0; start < word.length; start++) {
+            for (
+              let end = start + this.minSearchCharacters;
+              end <= word.length;
+              end++
+            ) {
+              substrings.add(word.slice(start, end));
+            }
           }
-        }
-      });
+        });
     });
-    subStrings.forEach((subString) => {
-      const searchSet = this.searchIndex.get(subString);
-      if (searchSet) {
-        searchSet.add(dataId);
-      } else {
-        this.searchIndex.set(subString, new Set([dataId]));
+    substrings.forEach((token) => {
+      const matches = this.searchIndex.get(token);
+      if (matches) matches.add(dataId);
+      else this.searchIndex.set(token, new Set([dataId]));
+    });
+    return this.rowMatchesSearch(substrings);
+  }
+
+  private rowMatchesSearch(substrings: Set<string>): boolean {
+    const terms = this.searchTerms(this.searchText);
+    if (!terms?.length) return false;
+    if (this.searchOperator == "OR") {
+      return terms.some((term) => substrings.has(term));
+    }
+    return terms.every((term) => substrings.has(term));
+  }
+
+  private ensureFilterTypes(columns: TableColumn[], rows: TableRow[]) {
+    columns.forEach((col) => {
+      if (!col.isFilterable || col.filterType) return;
+      const firstVal = rows[0]?.[col.field];
+      if (firstVal === undefined || firstVal === null) return;
+      if (firstVal instanceof Date) col.filterType = "date";
+      else if (
+        !Number.isNaN(Number(firstVal)) &&
+        String(firstVal).trim() !== ""
+      ) {
+        col.filterType = "number";
+      } else if (typeof firstVal === "string" || firstVal instanceof String) {
+        col.filterType = "string";
       }
     });
-    return;
   }
 
-  query() {
-    const isSearchDifferent =
-      this.previousSearchText && this.searchText !== this.previousSearchText;
-    const isFilterDifferent =
-      this.previousFilterBy &&
-      !this.areFiltersEqual(this.filterBy, this.previousFilterBy);
-    const isSortDifferent =
-      this.previousSortBy &&
-      !this.areSortsEqual(this.sortBy, this.previousSortBy);
-
-    let result: TableRow[] = [];
-    if (!this.previousData || isSearchDifferent || isFilterDifferent) {
-      result = this.search(this.searchText);
-      result = this.filter(this.filterBy, result);
-      result = this.sort(this.sortBy, result);
-      this.pageNumber = 1;
-    } else if (isSortDifferent) {
-      result = this.sort(this.sortBy, this.previousData);
-      this.pageNumber = 1;
-    } else {
-      result = this.previousData;
-    }
-
-    this.previousData = result;
-    this.previousSearchText = structuredClone(this.searchText);
-    this.previousFilterBy = structuredClone(this.filterBy);
-    this.previousSortBy = structuredClone(this.sortBy);
-
-    result = this.paginate(result);
-    return result;
+  private computeVisible(): TableRow[] {
+    let rows = this.search(this.searchText, this.data ?? []);
+    rows = this.filter(this.filterBy, rows);
+    rows = this.sort(this.sortBy, rows);
+    return this.paginate(rows);
   }
 
-  search(searchText?: string) {
-    if (!searchText?.length || searchText.length <= this.minSearchCharacters) {
-      return this.data;
-    }
-    const rows: TableRow[] = [];
-    const terms = searchText
+  private searchTerms(searchText?: string): string[] | undefined {
+    if (!searchText || searchText.length <= this.minSearchCharacters) return;
+    return searchText
       .toLowerCase()
       .split(" ")
-      .filter((t) => t.length >= this.minSearchCharacters);
-    if (this.searchOperator == "OR") {
-      const dataIds = new Set<string>();
-      terms.forEach((term) => {
-        const ids = this.searchIndex.get(term);
-        ids?.forEach((id) => dataIds.add(id));
-      });
-      dataIds.forEach((id) => rows.push(this.dataById.get(id)!));
-    } else if (this.searchOperator == "AND") {
-      let dataIds: string[] = [];
-      terms.forEach((term) => {
-        const ids = this.searchIndex.get(term);
-        if (ids) {
-          if (dataIds.length) {
-            dataIds = dataIds.filter((value) => ids.has(value));
-          } else {
-            dataIds = [...ids];
-          }
-        }
-      });
-      dataIds.forEach((id) => rows.push(this.dataById.get(id)!));
-    }
+      .filter((term) => term.length >= this.minSearchCharacters);
+  }
+
+  search(searchText?: string, source: TableRow[] = this.data ?? []) {
+    const terms = this.searchTerms(searchText);
+    if (!terms) return source;
+    if (!terms.length) return [];
+    const ids = this.matchingSearchIds(terms);
+    const rows: TableRow[] = [];
+    this.dataById.forEach((row, id) => {
+      if (ids.has(id)) rows.push(row);
+    });
     return rows;
+  }
+
+  private matchingSearchIds(terms: string[]): Set<string> {
+    if (this.searchOperator == "OR") {
+      const ids = new Set<string>();
+      terms.forEach((term) => {
+        this.searchIndex.get(term)?.forEach((id) => ids.add(id));
+      });
+      return ids;
+    }
+    const first = this.searchIndex.get(terms[0]);
+    if (!first) return new Set();
+    let ids = new Set(first);
+    for (const term of terms.slice(1)) {
+      const found = this.searchIndex.get(term);
+      if (!found) return new Set();
+      ids = new Set([...ids].filter((id) => found.has(id)));
+    }
+    return ids;
   }
 
   sort(tableSorts: TableSort[], rows: TableRow[]) {
     if (!tableSorts.length) return rows;
-    return rows.sort((a, b) => this.recursiveSort(a, b, tableSorts));
+    return [...rows].sort((a, b) => this.recursiveSort(a, b, tableSorts));
   }
 
   recursiveSort(
@@ -272,10 +331,10 @@ export class LocalTableComponent extends LitElement {
       return 0;
     }
     if (value1 > value2) {
-      return tableSort.direction == "ASCENDING" ? -1 : 1;
+      return tableSort.direction == "ASCENDING" ? 1 : -1;
     }
     if (value1 < value2) {
-      return tableSort.direction == "ASCENDING" ? 1 : -1;
+      return tableSort.direction == "ASCENDING" ? -1 : 1;
     }
     return 0;
   }
@@ -337,32 +396,6 @@ export class LocalTableComponent extends LitElement {
     return rows.slice(currentIndex, nextIndex);
   }
 
-  areSortsEqual(sorts1: TableSort[], sorts2: TableSort[]) {
-    return (
-      sorts1.length === sorts2.length &&
-      sorts1.every(
-        (sort1, i) =>
-          sort1.direction === sorts2[i].direction &&
-          sort1.field === sorts2[i].field,
-      )
-    );
-  }
-
-  areFiltersEqual(filters1: TableFilter[], filters2: TableFilter[]) {
-    return (
-      filters1.length == filters2.length &&
-      filters1.every((filter1, i) => {
-        const filter2 = filters2[i];
-        return (
-          filter1.condition == filter2.condition &&
-          filter1.field == filter2.field &&
-          filter1.values.length == filter2.values.length &&
-          filter1.values.every((val1, ind) => val1 == filter2.values[ind])
-        );
-      })
-    );
-  }
-
   changeSort(event: CustomEvent) {
     this.echoEvent(event);
     const field = event.detail.field;
@@ -396,6 +429,7 @@ export class LocalTableComponent extends LitElement {
     );
     if (currentFilter) {
       currentFilter.values = values;
+      currentFilter.condition = condition;
       this.requestUpdate();
       return;
     }
@@ -411,6 +445,7 @@ export class LocalTableComponent extends LitElement {
   }
 
   echoEvent(event: CustomEvent) {
+    event.stopPropagation();
     const options = {
       detail: event.detail,
       bubbles: true,
@@ -421,6 +456,8 @@ export class LocalTableComponent extends LitElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    this.indexGeneration += 1;
+    clearTimeout(this.indexTimer);
     this.dataById.clear();
     this.searchIndex.clear();
     this.filterIndex.clear();

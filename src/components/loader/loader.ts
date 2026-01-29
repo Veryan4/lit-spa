@@ -7,7 +7,7 @@ import { styles } from "./loader.styles";
 export class LoaderComponent extends LitElement {
   static styles = [styles];
 
-  @property({ type: String })
+  @property({ type: Object })
   styleInfo?: Record<string, string | number>;
 
   constructor() {
@@ -16,7 +16,13 @@ export class LoaderComponent extends LitElement {
 
   render() {
     return html`
-      <div class="loader" style=${styleMap(this.styleInfo ?? {})}>
+      <div
+        class="loader"
+        role="status"
+        aria-live="polite"
+        aria-label="Loading"
+        style=${styleMap(this.styleInfo ?? {})}
+      >
         ${svg`
           <svg
             version="1.1"
@@ -24,6 +30,7 @@ export class LoaderComponent extends LitElement {
             x="0px"
             y="0px"
             viewBox="0 0 50 50"
+            aria-hidden="true"
             style="enable-background:new 0 0 50 50;"
             xml:space="preserve"
             >

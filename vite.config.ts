@@ -15,14 +15,23 @@ export default defineConfig((config) => {
         target: "esnext",
         lib: {
           name: "lit-spa",
-          fileName: "lit-spa",
-          entry: r(__dirname, "src/index.ts"),
+          entry: {
+            "lit-spa": r(import.meta.dirname, "src/index.ts"),
+            router: r(import.meta.dirname, "src/entries/router.ts"),
+            http: r(import.meta.dirname, "src/entries/http.ts"),
+            state: r(import.meta.dirname, "src/entries/state.ts"),
+            services: r(import.meta.dirname, "src/entries/services.ts"),
+            components: r(import.meta.dirname, "src/entries/components.ts"),
+          },
           formats: ["es"],
+          fileName: (_format, entryName) => `${entryName}.js`,
         },
         rollupOptions: {
-          external: [/^lit/, "demo/**"],
+          external: [/^lit/],
+          output: {
+            chunkFileNames: "chunks/[name].js",
+          },
         },
-        exclude: ["demo/**"],
       },
       plugins: [dts({ tsconfigPath: "./tsconfig.lib.json" })],
       publicDir: false,

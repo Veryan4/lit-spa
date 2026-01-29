@@ -51,7 +51,13 @@ export class FilterComponent extends LitElement {
         .mode=${"click"}
       >
         <div slot="reference" style="display:flex;align-items:center;">
-          ${this.filterSVG()}
+          <button
+            type="button"
+            class="filter-button"
+            aria-label="Filter ${this.column?.name ?? ""}"
+          >
+            ${this.filterSVG()}
+          </button>
         </div>
         <div class="floating filter-form" slot="floating">
           ${this.condition == "EQUAL"
@@ -105,13 +111,15 @@ export class FilterComponent extends LitElement {
                 />
               `
             : ""}
-          <button @click=${this.submitFilterValues}>
+          <button type="button" @click=${this.submitFilterValues}>
             ${this.labels.apply}
           </button>
           ${this.input1?.value ||
           this.input2?.value ||
           this.selectedOptions.length
-            ? html` <button @click=${this.clear}>${this.labels.clear}</button> `
+            ? html` <button type="button" @click=${this.clear}>
+                ${this.labels.clear}
+              </button>`
             : ""}
         </div>
       </lit-spa-tooltip>
@@ -135,10 +143,9 @@ export class FilterComponent extends LitElement {
       val1 = this.convertValueType(val1);
       values.push(val1);
       if (this.condition == "EQUAL") {
-        values = values.concat(this.selectedOptions);
-        if (this.input1.value) {
-          values.push(this.input1.value);
-        }
+        this.selectedOptions.forEach((option) => {
+          values.push(this.convertValueType(option));
+        });
       }
       if (this.condition == "BETWEEN") {
         // TODO: manage setting maximum of first input and minimum of second input
@@ -183,7 +190,7 @@ export class FilterComponent extends LitElement {
     }
     this.selectedOptions = [];
     this.options = [];
-    this.filterIndex?.forEach((value, _) => this.options.push(value));
+    this.filterIndex?.forEach((_, key) => this.options.push(key));
     const options = {
       detail: { field: this.column.field },
       bubbles: true,

@@ -11,7 +11,7 @@ export const themeService = {
   state,
 };
 
-let themes: Record<string, any> = {
+let themes: Record<string, Record<string, string>> = {
   light: {
     "--primary-color": "#2c2c2c",
     "--secondary-color": "black",
@@ -46,30 +46,43 @@ function getTheme(): string {
   return storedTheme || detectOSTheme();
 }
 
-function changeTheme(newTheme: string): void {
-  if (themes.hasOwnProperty(newTheme)) {
-    setTheme(themes[newTheme]);
-    localStorage.setItem(THEME_KEY, newTheme);
-    state.update(newTheme);
-  } else {
+function changeTheme(newTheme: string, persist = true): void {
+  if (!Object.hasOwn(themes, newTheme)) {
     console.warn(newTheme + " isn't registered as a theme yet!");
+    return;
   }
+  setTheme(themes[newTheme]);
+  if (persist) localStorage.setItem(THEME_KEY, newTheme);
+  state.update(newTheme);
 }
 
-function registerThemes(themesMap?: Record<string, any>) {
+function registerThemes(themesMap?: Record<string, Record<string, string>>) {
   if (themesMap) {
     themes = themesMap;
   }
   const initTheme = getTheme();
-  if (themes.hasOwnProperty(initTheme)) {
-    setTheme(themes[initTheme]);
-  } else {
-    setTheme(themes["light"]);
-  }
+  const name = Object.hasOwn(themes, initTheme) ? initTheme : "light";
+  setTheme(themes[name]);
+  state.update(name);
+  watchOperatingSystemTheme();
+}
+
+let watchingOperatingSystemTheme = false;
+
+function watchOperatingSystemTheme() {
+  if (watchingOperatingSystemTheme || typeof window === "undefined") return;
+  if (!window.matchMedia) return;
+  watchingOperatingSystemTheme = true;
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", () => {
+      if (localStorage.getItem(THEME_KEY)) return;
+      changeTheme(detectOSTheme(), false);
+    });
 }
 
 function detectOSTheme() {
-  if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
+  if (window.matchMedia?.("(prefers-color-scheme: dark)")?.matches) {
     return "dark";
   }
   return "light";

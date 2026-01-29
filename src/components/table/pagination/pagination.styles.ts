@@ -25,6 +25,9 @@ export const styles = css`
     border-radius: 100%;
     width: 1.5rem;
     height: 1.5rem;
+    border: none;
+    padding: 0;
+    font: inherit;
   }
 
   .page.selected {

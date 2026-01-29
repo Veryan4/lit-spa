@@ -73,37 +73,45 @@ export class TableComponent extends LitElement {
     };
     const columns = this.formatColumns();
     return html`
-      <div class="table" style=${styleMap(styles)}>
-        ${columns.map((column) => {
-          return html`<div
-            class="column"
-            style=${styleMap(this.columnStyles ?? {})}
-          >
-            ${column.name}
-            <div class="options">
-              ${this.renderFilter(column)} ${this.renderSort(column)}
-            </div>
-          </div>`;
-        })}
-        ${this.data.map((row) =>
-          this.columns.map((col) => {
-            let template = col.template
-              ? (col.template(col, row) as any)
-              : undefined;
-            template = template?.cloneNode
-              ? template.cloneNode(true)
-              : template;
+      <div class="table" role="table" style=${styleMap(styles)}>
+        <div class="row" role="row">
+          ${columns.map((column) => {
             return html`<div
-              class="cell"
-              style=${styleMap(this.cellStyles ?? {})}
+              class="column"
+              role="columnheader"
+              style=${styleMap(this.columnStyles ?? {})}
             >
-              ${template ? template : row[col.field]}
+              ${column.name}
+              <div class="options">
+                ${this.renderFilter(column)} ${this.renderSort(column)}
+              </div>
             </div>`;
-          }),
+          })}
+        </div>
+        ${(this.data ?? []).map(
+          (row) => html`
+            <div class="row" role="row">
+              ${this.columns.map((col) => {
+                let template = col.template
+                  ? (col.template(col, row) as any)
+                  : undefined;
+                template = template?.cloneNode
+                  ? template.cloneNode(true)
+                  : template;
+                return html`<div
+                  class="cell"
+                  role="cell"
+                  style=${styleMap(this.cellStyles ?? {})}
+                >
+                  ${template ? template : row[col.field]}
+                </div>`;
+              })}
+            </div>
+          `,
         )}
       </div>
     `;
-  } // replace row.id by either index or row id getter
+  }
 
   renderFilter(column: TableColumn) {
     return column.filterType
@@ -133,6 +141,7 @@ export class TableComponent extends LitElement {
   }
 
   echoEvent(event: CustomEvent) {
+    event.stopPropagation();
     const options = {
       detail: event.detail,
       bubbles: true,

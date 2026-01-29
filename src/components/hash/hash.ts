@@ -1,17 +1,17 @@
-import { LitElement, html, svg } from "lit";
+import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { styles } from "./hash.styles";
-import { hashService, routerService } from "../../services";
+import { hashService } from "../../services";
 
 @customElement("lit-spa-hash")
 export class HashComponent extends LitElement {
   static styles = [styles];
 
-  @property({ type: String })
+  @property({ type: Object })
   rowStyle?: Record<string, string | number>;
 
-  @property({ type: String })
+  @property({ type: Object })
   hashStyle?: Record<string, string | number>;
 
   constructor() {
@@ -39,7 +39,7 @@ export class HashComponent extends LitElement {
   }
 
   handleClick() {
-    hashService.updateHash(this.id);
+    hashService.updateHash(this.id, true);
   }
 }
 

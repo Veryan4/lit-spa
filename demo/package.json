@@ -3,12 +3,9 @@
   "version": "0.1.4",
   "license": "MIT",
   "peerDependencies": {
-    "lit": "3.3.1"
+    "lit": "3.3.3"
   },
   "dependencies": {
-    "highlight.js": "11.11.1"
-  },
-  "devDependencies": {
-    "@types/highlight.js": "^10.1.0"
+    "highlight.js": "11.12.0"
   }
 }
