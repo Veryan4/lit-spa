@@ -18,11 +18,11 @@ export const httpService = {
   cleanCache,
 };
 
-function baseHttp<T>(
+function baseHttp(
   url: string,
   options?: RequestInit,
-): Promise<T> {
-  return fetch(url, options).then((response) => handleFetchResponse(response));
+): Promise<Response> {
+  return fetch(url, options);
 }
 
 function get<T>(url: string, bustCache = false): Promise<T> {
@@ -45,7 +45,7 @@ function put<T>(
     method: "PUT",
     headers: httpService.createHeaders(isFormData),
     body: httpService.createBody(data, isFormData),
-  });
+  }).then((response) => handleFetchResponse(response));
 }
 
 function post<T>(
@@ -57,7 +57,7 @@ function post<T>(
     method: "POST",
     headers: httpService.createHeaders(isFormData),
     body: httpService.createBody(data, isFormData),
-  });
+  }).then((response) => handleFetchResponse(response));
 }
 
 function patch<T>(
@@ -69,14 +69,14 @@ function patch<T>(
     method: "PATCH",
     headers: httpService.createHeaders(isFormData),
     body: httpService.createBody(data, isFormData),
-  });
+  }).then((response) => handleFetchResponse(response));
 }
 
 function del<T>(url: string): Promise<T> {
   return httpService.baseHttp(url, {
     method: "DELETE",
     headers: httpService.createHeaders(),
-  });
+  }).then((response) => handleFetchResponse(response));
 }
 
 function createHeaders(isFormData?: boolean): Record<string, string> {
@@ -118,7 +118,7 @@ function cachedHttp(
   if (item && new Date() < item.expires && !bustCache) {
     return item.value.then((response) => response.clone());
   }
-  const call = fetch(url, options).then(
+  const call = httpService.baseHttp(url, options).then(
     (response) => {
       if (!response.ok) cache.delete(cacheKey);
       return response;
