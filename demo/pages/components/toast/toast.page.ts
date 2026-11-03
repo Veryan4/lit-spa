@@ -1,12 +1,21 @@
 import { LitElement, html, css } from "lit";
 import { customElement } from "lit/decorators.js";
 import { TranslationController } from "../../../demo-tools";
+import { docStyles } from "../../../doc.styles";
 import "../../../demo-tools";
 import "./toast-demo";
+
+const usage = `import "@veryan/lit-spa/components";
+import { toastService } from "@veryan/lit-spa";
+
+html\`<lit-spa-toast></lit-spa-toast>\`;
+
+toastService.newToast("Saved");`;
 
 @customElement("demo-toast")
 class ToastPage extends LitElement {
   static styles = [
+    docStyles,
     css`
       .description {
         margin: 1rem 0;
@@ -19,15 +28,16 @@ class ToastPage extends LitElement {
   render() {
     return html`
       <div class="description">
-        A notification toast which will stack upon itself and can be customized
+        A notification that stacks, and can be customized.
       </div>
       <demo-section
+        .usage=${usage}
         .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/components/toast/toast-demo.ts"}
         .documentation=${[]}
         .cssVariables=${[
           {
             name: "--toast-font-family",
-            default: "--font-family or Roboto sans serif",
+            default: "--font-family or Roboto, sans-serif",
             description: "The font used for the toast.",
           },
           {

@@ -18,8 +18,8 @@ class DocumentationDemo extends LitElement {
       .grid {
         grid-template-columns: 1fr 2fr;
         display: grid;
-        border-top: 1px solid var(--secondary-color);
-        border-right: 1px solid var(--secondary-color);
+        border-top: 1px solid var(--outline-color);
+        border-right: 1px solid var(--outline-color);
       }
       .doc {
         display: flex;
@@ -27,8 +27,8 @@ class DocumentationDemo extends LitElement {
         gap: 1rem;
         white-space: nowrap;
         padding: 0.5rem;
-        border-left: 1px solid var(--secondary-color);
-        border-bottom: 1px solid var(--secondary-color);
+        border-left: 1px solid var(--outline-color);
+        border-bottom: 1px solid var(--outline-color);
         min-height: 3rem;
         text-wrap: wrap;
       }
@@ -73,12 +73,14 @@ class DocumentationDemo extends LitElement {
                 Description:
                 <div>${doc.description}</div>
               </div>
-              ${doc.default
-                ? html` <div>
-                    Default Value:
-                    <div>${doc.default}</div>
-                  </div>`
-                : ""}
+              ${
+                doc.default
+                  ? html` <div>
+                      Default Value:
+                      <div>${doc.default}</div>
+                    </div>`
+                  : ""
+              }
             </div>
           `,
         )}
@@ -95,10 +97,12 @@ class DocumentationDemo extends LitElement {
       end = found[0].substring(found[0].length - 1);
       subProperty = found[0].substring(1).slice(0, -1);
     }
-    return html`${type}${subProperty
-      ? html`<div class="unset">
-          ${start}${html`<div class="attr">${subProperty}</div>`}${end}
-        </div>`
-      : ""}`;
+    return html`${type}${
+      subProperty
+        ? html`<div class="unset">
+            ${start}${html`<div class="attr">${subProperty}</div>`}${end}
+          </div>`
+        : ""
+    }`;
   }
 }

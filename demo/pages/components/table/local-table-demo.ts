@@ -88,7 +88,6 @@ class LocalTableDemo extends LitElement {
         .sortBy=${this.sortBy}
         .filterBy=${this.filterBy}
         .data=${this.data}
-        .columnStyles=${{ backgroundColor: "var(--theme-very-light)" }}
       ></lit-spa-local-table>
     `;
   }

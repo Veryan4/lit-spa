@@ -1,18 +1,28 @@
 import { css } from "lit";
 
 export const styles = css`
-  .file {
-    border-radius: 6px;
-    overflow: hidden;
-    margin: 1em 0;
+  :host {
+    display: block;
+    max-width: 100%;
+    min-width: 0;
   }
 
-  .file-light {
-    border: 1px solid #ccc;
+  .code-container {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .file {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 0;
+    border: 1px solid var(--outline-color, #b0bec5);
   }
 
   .file-dark {
-    border: 1px solid #555;
     background-color: #0d1117;
   }
 
@@ -27,43 +37,13 @@ export const styles = css`
   .file .file-meta-light {
     color: #586069;
     background-color: #f7f7f7;
-    border-top: 1px solid #ccc;
+    border-top: 1px solid var(--outline-color, #b0bec5);
   }
 
   .file .file-meta-dark {
     color: #f7f7f7;
-    background-color: #586069;
-    border-top: 1px solid #555;
-  }
-
-  .file-dark .hljs {
-    background-color: unset;
-    color: unset;
-  }
-  .file-dark .ts.hljs .hljs-tag .hljs-name {
-    color: #f7f7f7;
-  }
-
-  .file-dark .ts.hljs .hljs-tag .hljs-attr {
-    color: #f7f7f7;
-  }
-
-  .file-dark .hljs-subst,
-  .file-dark .hljs-tag,
-  .file-dark .hljs-tag .hljs-name,
-  .file-dark .hljs-tag .hljs-attr {
-    color: #f7f7f7;
-  }
-
-  .file-dark .hljs-string {
-    color: var(--theme-very-light);
-  }
-
-  .file-dark .hljs-meta,
-  .file-dark .hljs-attribute,
-  .file-dark .hljs-attr,
-  .file-dark .hljs-selector-class {
-    color: var(--theme-very-dark);
+    background-color: #3a3a3a;
+    border-top: 1px solid var(--outline-color, #8b949e);
   }
 
   .file .file-meta a {
@@ -82,11 +62,36 @@ export const styles = css`
 
   .file .code-area {
     position: relative;
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 0.8em;
+    box-sizing: border-box;
   }
 
   .file .code-area pre {
     margin: 0;
     padding: 0;
+  }
+
+  .file .code-area pre,
+  .file .code-area code {
+    font-family:
+      ui-monospace,
+      SFMono-Regular,
+      Menlo,
+      Consolas,
+      Liberation Mono,
+      monospace;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+
+  .file .code-area pre code {
+    width: max-content;
+    min-width: 100%;
+    padding: 0;
+    overflow: visible;
+    box-sizing: border-box;
   }
 
   .file .code-area .hljs-ln-numbers {
@@ -126,7 +131,7 @@ export const styles = css`
   }
 
   .file .code-area pre code.hljs {
-    padding: 0.8em;
+    padding: 0;
   }
 
   .file .code-area .hide-line-numbers .hljs-ln-numbers {
@@ -378,5 +383,183 @@ export const githubStyles = css`
   .hljs-punctuation,
   .hljs-tag {
     /* purposely ignored */
+  }
+`;
+
+/** VS Code Light+ / Dark+ colors, split by the classes highlight.js actually emits. */
+export const ideStyles = css`
+  .file-light .hljs {
+    color: #000000;
+    background: #ffffff;
+  }
+
+  .file-dark .hljs {
+    color: #d4d4d4;
+    background: transparent;
+  }
+
+  .file-light .hljs-keyword,
+  .file-light .hljs-title,
+  .file-light .hljs-name,
+  .file-light .hljs-section,
+  .file-light .hljs-doctag,
+  .file-light .hljs-selector-tag,
+  .file-dark .hljs-keyword,
+  .file-dark .hljs-title,
+  .file-dark .hljs-name,
+  .file-dark .hljs-section,
+  .file-dark .hljs-doctag,
+  .file-dark .hljs-selector-tag {
+    font-weight: normal;
+  }
+
+  .file-light .hljs-comment,
+  .file-light .hljs-quote {
+    color: #008000;
+  }
+
+  .file-dark .hljs-comment,
+  .file-dark .hljs-quote {
+    color: #6a9955;
+  }
+
+  .file-light .hljs-keyword,
+  .file-light .hljs-meta .hljs-keyword,
+  .file-light .hljs-doctag,
+  .file-light .hljs-literal,
+  .file-light .hljs-variable.language_ {
+    color: #0000ff;
+  }
+
+  .file-dark .hljs-keyword,
+  .file-dark .hljs-meta .hljs-keyword,
+  .file-dark .hljs-doctag {
+    color: #c586c0;
+  }
+
+  .file-dark .hljs-literal,
+  .file-dark .hljs-variable.language_ {
+    color: #569cd6;
+  }
+
+  .file-light .hljs-string,
+  .file-light .hljs-meta .hljs-string {
+    color: #a31515;
+  }
+
+  .file-dark .hljs-string,
+  .file-dark .hljs-meta .hljs-string {
+    color: #ce9178;
+  }
+
+  .file-light .hljs-number {
+    color: #098658;
+  }
+
+  .file-dark .hljs-number {
+    color: #b5cea8;
+  }
+
+  .file-light .hljs-regexp,
+  .file-light .hljs-char.escape_ {
+    color: #811f3f;
+  }
+
+  .file-dark .hljs-regexp,
+  .file-dark .hljs-char.escape_ {
+    color: #d16969;
+  }
+
+  .file-light .hljs-title.function_,
+  .file-light .hljs-built_in,
+  .file-light .hljs-meta {
+    color: #795e26;
+  }
+
+  .file-dark .hljs-title.function_,
+  .file-dark .hljs-built_in,
+  .file-dark .hljs-meta {
+    color: #dcdcaa;
+  }
+
+  .file-light .hljs-title.class_,
+  .file-light .hljs-title.class_.inherited__,
+  .file-light .hljs-type {
+    color: #267f99;
+  }
+
+  .file-dark .hljs-title.class_,
+  .file-dark .hljs-title.class_.inherited__,
+  .file-dark .hljs-type {
+    color: #4ec9b0;
+  }
+
+  .file-light .hljs-attr,
+  .file-light .hljs-attribute,
+  .file-light .hljs-variable,
+  .file-light .hljs-params,
+  .file-light .hljs-property,
+  .file-light .hljs-template-variable {
+    color: #001080;
+  }
+
+  .file-dark .hljs-attr,
+  .file-dark .hljs-attribute,
+  .file-dark .hljs-variable,
+  .file-dark .hljs-params,
+  .file-dark .hljs-property,
+  .file-dark .hljs-template-variable {
+    color: #9cdcfe;
+  }
+
+  .file-light .hljs-tag {
+    color: #800000;
+  }
+
+  .file-light .hljs-tag .hljs-name,
+  .file-light .hljs-selector-tag,
+  .file-light .hljs-selector-class,
+  .file-light .hljs-selector-id,
+  .file-light .hljs-selector-attr,
+  .file-light .hljs-selector-pseudo {
+    color: #800000;
+  }
+
+  .file-light .hljs-tag .hljs-attr {
+    color: #e50000;
+  }
+
+  .file-dark .hljs-tag,
+  .file-dark .hljs-punctuation,
+  .file-dark .hljs-operator,
+  .file-dark .hljs-subst {
+    color: #d4d4d4;
+  }
+
+  .file-dark .hljs-tag .hljs-name,
+  .file-dark .hljs-selector-tag {
+    color: #569cd6;
+  }
+
+  .file-dark .hljs-tag .hljs-attr,
+  .file-dark .hljs-selector-attr,
+  .file-dark .hljs-selector-pseudo {
+    color: #9cdcfe;
+  }
+
+  .file-dark .hljs-selector-class,
+  .file-dark .hljs-selector-id {
+    color: #d7ba7d;
+  }
+
+  .file-light .hljs-operator,
+  .file-light .hljs-punctuation,
+  .file-light .hljs-subst,
+  .file-light .hljs-template-tag {
+    color: #000000;
+  }
+
+  .file-dark .hljs-template-tag {
+    color: #d4d4d4;
   }
 `;

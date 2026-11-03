@@ -1,6 +1,7 @@
 import { LitElement, css, html } from "lit";
 import { customElement } from "lit/decorators.js";
 import { TranslationController, httpService } from "../../../demo-tools";
+import { demoActionStyles } from "../../../demo-action.styles";
 import "../../../demo-tools";
 
 type ToDo = { userId: string; id: number; title: string; completed: boolean };
@@ -8,9 +9,11 @@ type ToDo = { userId: string; id: number; title: string; completed: boolean };
 @customElement("http-demo")
 class HttpDemo extends LitElement {
   static styles = [
+    demoActionStyles,
     css`
-      button {
-        cursor: pointer;
+      .result {
+        margin-top: 0.75rem;
+        white-space: pre-wrap;
       }
     `,
   ];
@@ -20,10 +23,12 @@ class HttpDemo extends LitElement {
 
   render() {
     return html`
-      <div class="body">
-        <button @click=${this.fetchData}>Fetch Data</button>
+      <div>
+        <div class="actions">
+          <button type="button" @click=${this.fetchData}>Fetch Data</button>
+        </div>
         ${this.todos.length
-          ? html`<div>${JSON.stringify(this.todos, null, 4)}</div>`
+          ? html`<div class="result">${JSON.stringify(this.todos, null, 4)}</div>`
           : ""}
       </div>
     `;

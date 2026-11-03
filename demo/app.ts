@@ -1,11 +1,11 @@
-import { LitElement, html, css, PropertyValueMap } from "lit";
-import { customElement, query } from "lit/decorators.js";
+import { LitElement, html, nothing } from "lit";
+import { customElement, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import {
   Route,
   RouteController,
+  ThemeController,
   TranslationController,
-  hashService,
   routerService,
   themeService,
 } from "./demo-tools";
@@ -16,59 +16,56 @@ import { styles } from "./app.styles";
 class LitApp extends LitElement {
   static styles = [styles];
 
-  @query("#nav-background")
-  backgroundElement: HTMLElement;
+  @state()
+  private menuOpen = false;
 
   private router = new RouteController(this, routes);
+  private theme = new ThemeController(this);
   private i18n = new TranslationController(this, {
     supportedLanguages: ["en", "fr"],
   });
 
   render() {
-    this.handleLater();
-    const formattedHash = location.hash.substring(1);
+    const hash = location.hash.replace(/^#/, "");
     return html`
       <div class="app">
-        <div class="side-nav">
-          <div class="logo"></div>
-          <div id="nav-background"></div>
-          ${routes.map(
-            (route) =>
-              html`<div
-                  class="nav-item ${classMap({
-                    selected:
-                      this.router.activeRoute?.name == route.name &&
-                      !formattedHash,
-                  })}"
-                  @click=${(e: Event) => this.selectedNavItem(e, route)}
-                >
-                  ${this.formatRouteName(route.name)}
-                </div>
-                ${route.hashes?.length
-                  ? html`
-                      <div
-                        class="hash-list ${classMap({
-                          hidden: this.router.activeRoute?.name != route.name,
-                        })}"
-                      >
-                        ${route.hashes.map(
-                          (hash) =>
-                            html`<div
-                              class="nav-item nav-hash ${classMap({
-                                selected: formattedHash == hash,
-                              })}"
-                              @click=${(e: Event) =>
-                                this.selectedHashItem(e, route, hash)}
-                            >
-                              ${this.formatRouteName(hash)}
-                            </div>`,
-                        )}
-                      </div>
-                    `
-                  : ""} `,
-          )}
-        </div>
-        <div class="main">${this.router.navigation()}</div>
+        <header class="topbar">
+          <button
+            class="menu-btn"
+            type="button"
+            aria-expanded=${this.menuOpen ? "true" : "false"}
+            aria-controls="site-nav"
+            @click=${() => (this.menuOpen = !this.menuOpen)}
+          >
+            ${this.menuOpen ? "Close" : "Menu"}
+          </button>
+          <a
+            class="logo"
+            href="/"
+            aria-label="lit-spa home"
+            @click=${(event: MouseEvent) => this.follow(event, "/")}
+          >
+            <img src="/lit-spa.png" alt="" />
+          </a>
+          ${this.themeControl()}
+        </header>
+        <nav
+          id="site-nav"
+          class="side-nav ${classMap({ open: this.menuOpen })}"
+          aria-label="Primary"
+        >
+          <a
+            class="logo"
+            href="/"
+            aria-label="lit-spa home"
+            @click=${(event: MouseEvent) => this.follow(event, "/")}
+          >
+            <img src="/lit-spa.png" alt="" />
+          </a>
+          ${this.themeControl("sidebar-theme")}
+          ${routes.map((route) => this.routeLinks(route, hash))}
+        </nav>
+        <main class="main">${this.router.navigation()}</main>
       </div>
       <lit-spa-toast></lit-spa-toast>
     `;
@@ -77,58 +74,81 @@ class LitApp extends LitElement {
   constructor() {
     super();
     themeService.registerThemes();
+    void this.i18n;
   }
 
-  protected shouldUpdate(
-    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>,
-  ): boolean {
-    return this.i18n.hasLoadedTranslations;
+  private themeControl(className = "") {
+    const next = this.theme.value === "dark" ? "light" : "dark";
+    return html`<div class="theme-control ${className}">
+      <span class="theme-label">Theme</span>
+      <button
+        class="text-btn"
+        type="button"
+        aria-label="Switch to ${next} theme"
+        @click=${() => themeService.changeTheme(next)}
+      >
+        ${next === "light" ? "Light" : "Dark"}
+      </button>
+    </div>`;
   }
 
-  formatRouteName(routeName: string) {
+  private routeLinks(route: Route, hash: string) {
+    const href = route.name === "home" ? "/" : `/${route.name}`;
+    const active = this.router.activeRoute?.name === route.name;
+    return html`
+      <a
+        class="nav-item"
+        href=${href}
+        aria-current=${active && !hash ? "page" : nothing}
+        @click=${(event: MouseEvent) => this.follow(event, href)}
+      >
+        ${this.formatRouteName(route.name)}
+      </a>
+      ${
+        route.hashes?.length
+          ? html`<div class="nav-group ${classMap({ open: active })}">
+              ${route.hashes.map((item) => {
+                const itemHref = `${href}#${item}`;
+                return html`<a
+                  class="nav-item sub"
+                  href=${itemHref}
+                  aria-current=${active && hash === item ? "page" : nothing}
+                  @click=${(event: MouseEvent) => this.follow(event, itemHref)}
+                >
+                  ${this.formatRouteName(item)}
+                </a>`;
+              })}
+            </div>`
+          : nothing
+      }
+    `;
+  }
+
+  private formatRouteName(routeName: string) {
+    const labels: Record<string, string> = {
+      http: "HTTP",
+      class: "State Class",
+    };
+    if (labels[routeName]) return labels[routeName];
     return routeName
       .split("-")
       .map((str) => str.charAt(0).toUpperCase() + str.slice(1))
       .join(" ");
   }
 
-  selectedNavItem(e: Event, route: Route) {
-    this.selectItem(e);
-    routerService.navigate(route.name);
-  }
-
-  selectedHashItem(e: Event, route: Route, hash: string) {
-    this.selectItem(e);
-    if (this.router.activeRoute?.name == route.name) {
-      hashService.updateHash(hash);
+  private follow(event: MouseEvent, href: string) {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
       return;
     }
-    routerService.navigate(route.name + "#" + hash);
-  }
-
-  selectItem(e: Event) {
-    const rect = (<HTMLElement>e.target).getBoundingClientRect();
-    Object.assign(this.backgroundElement.style, {
-      left: `${rect.x}px`,
-      top: `${rect.y}px`,
-      width: `${rect.width + 16}px`,
-    });
-    this.requestUpdate();
-  }
-
-  handleLater(): void {
-    setTimeout(() => {
-      const element =
-        this.shadowRoot?.querySelector(".selected.nav-hash") ??
-        this.shadowRoot?.querySelector(".selected");
-      const rect = element?.getBoundingClientRect();
-      if (rect) {
-        Object.assign(this.backgroundElement.style, {
-          left: `${rect.x}px`,
-          top: `${rect.y}px`,
-          width: `${rect.width + 16}px`,
-        });
-      }
-    });
+    event.preventDefault();
+    this.menuOpen = false;
+    routerService.navigate(href);
   }
 }

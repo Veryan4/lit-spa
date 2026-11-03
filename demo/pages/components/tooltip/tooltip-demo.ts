@@ -1,19 +1,19 @@
 import { LitElement, html, css, svg } from "lit";
 import { customElement } from "lit/decorators.js";
 import { TranslationController } from "../../../demo-tools";
+import { demoActionStyles } from "../../../demo-action.styles";
 import "../../../demo-tools";
 
 @customElement("tooltip-demo")
 class TooltipDemo extends LitElement {
   static styles = [
+    demoActionStyles,
     css`
       .wrap {
         display: flex;
         flex-direction: column;
-        gap: 2rem;
-      }
-      button {
-        cursor: pointer;
+        align-items: flex-start;
+        gap: 1.25rem;
       }
     `,
   ];
@@ -27,7 +27,7 @@ class TooltipDemo extends LitElement {
           Hover on top of this text.
         </lit-spa-tooltip>
         <lit-spa-tooltip .position=${"top"} .mode=${"click"}>
-          <div slot="reference"><button>Click on this button</button></div>
+          <div slot="reference"><button type="button">Click on this button</button></div>
           <div slot="floating">I am Open ${this.renderSVG()}</div>
         </lit-spa-tooltip>
       </div>

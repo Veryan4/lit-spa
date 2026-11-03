@@ -1,8 +1,10 @@
 :root {
+  color-scheme: light;
   --primary-color: #2c2c2c;
   --error-color: red;
   --primary-background-color: #fafafa;
   --secondary-background-color: white;
+  --sidebar-background: #e8eaed;
   --image-color: unset;
   --input-fill: WhiteSmoke;
   --outline-color: #b0bec5;
@@ -10,9 +12,16 @@
   --toast-color: #fff;
   --toast-border-radius: 0.5rem;
   --toast-offset: 100px;
+  --table-border-color: var(--outline-color);
+  --table-column-background-color: var(--input-fill);
+  --table-cell-background-color: var(--secondary-background-color);
+  --pagination-color: var(--primary-color);
+  --pagination-background: var(--input-fill);
+  --pagination-selected-color: #1a1a1a;
+  --pagination-selected-background: var(--theme-color);
   /* Fonts */
-  --font-family: "Roboto Sans", sans-serif;
-  --font-size: 18px;
+  --font-family: Roboto, sans-serif;
+  --font-size: 16px;
   --font-weight: 400;
   --font-weight-bold: 700;
   /* Misc */
@@ -35,13 +44,15 @@ body {
   margin: unset;
   color: var(--primary-color, #2c2c2c);
   background-color: var(--primary-background-color, #fafafa);
-  max-width: 100dvw;
-  overflow-x: hidden;
   font-family: var(--font-family);
+  font-size: var(--font-size);
+  line-height: 1.5;
+  overflow-x: hidden;
 }
 
-*:focus {
-  outline: none;
+:focus-visible {
+  outline: 2px solid var(--theme-very-dark);
+  outline-offset: 2px;
 }
 
 .bold {
@@ -58,8 +69,8 @@ body {
 
 /* Mobile */
 @media screen and (max-width: 780px) {
-  #app {
-    font-size: 14px;
+  body {
+    font-size: 16px;
   }
 }
 

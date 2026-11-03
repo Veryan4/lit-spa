@@ -17,28 +17,35 @@ let themes: Record<string, Record<string, string>> = {
     "--secondary-color": "black",
     "--primary-background-color": "#fafafa",
     "--secondary-background-color": "white",
+    "--sidebar-background": "#e8eaed",
     "--image-color": "unset",
     "--input-fill": "#E8E8E8",
     "--outline-color": "#b0bec5",
     "--toast-background": "#313131",
     "--chip-background": "#E8E8E8",
+    "color-scheme": "light",
   },
   dark: {
     "--primary-color": "#fafafa",
     "--secondary-color": "white",
     "--primary-background-color": "#2c2c2c",
-    "--secondary-background-color": "black",
+    "--secondary-background-color": "#1a1a1a",
+    "--sidebar-background": "#383838",
     "--image-color": "invert(100%)",
-    "--input-fill": "#696969",
-    "--outline-color": "#2c2c2c",
+    "--input-fill": "#4a4a4a",
+    "--outline-color": "#8b949e",
     "--toast-background": "black",
     "--chip-background": "#696969",
+    "color-scheme": "dark",
   },
 };
 
 function setTheme(theme: Record<string, string>): void {
   const root = document.querySelector(":root") as HTMLElement;
   Object.keys(theme).forEach((key) => root.style.setProperty(key, theme[key]));
+  if (!Object.hasOwn(theme, "color-scheme")) {
+    root.style.removeProperty("color-scheme");
+  }
 }
 
 function getTheme(): string {

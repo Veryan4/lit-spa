@@ -21,7 +21,7 @@ export const styles = css`
     width: fit-content;
     font-family: var(
       --tooltip-font-family,
-      var(--font-family, "Roboto Sans", sans-serif)
+      var(--font-family, Roboto, sans-serif)
     );
     font-size: var(--tooltip-font-size, 12px);
     background: var(

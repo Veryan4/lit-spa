@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { customElement } from "lit/decorators.js";
 import { HashController, TranslationController } from "../../demo-tools";
+import { docStyles } from "../../doc.styles";
 import "../../demo-tools";
 import "./http/http.page";
 import "./translations/translations.page";
@@ -11,6 +12,7 @@ import "./state-object/state-object.page";
 @customElement("demo-state-management")
 class StateManagementPage extends LitElement {
   static styles = [
+    docStyles,
     css`
       .description {
         margin: 1rem 0;
@@ -28,8 +30,8 @@ class StateManagementPage extends LitElement {
     return html`
       <h1>State management</h1>
       <div class="description">
-        There are a few of different services offered by the library which help
-        manage state in common scenarios.
+        A few services for the state most apps already have: routing, HTTP,
+        translations, theme, and a shared class.
       </div>
       <div class="title">
         <lit-spa-hash id="router">
@@ -39,7 +41,7 @@ class StateManagementPage extends LitElement {
       <demo-router></demo-router>
       <div class="title">
         <lit-spa-hash id="http">
-          <h2>Http</h2>
+          <h2>HTTP</h2>
         </lit-spa-hash>
       </div>
       <demo-http></demo-http>
@@ -61,7 +63,6 @@ class StateManagementPage extends LitElement {
         </lit-spa-hash>
       </div>
       <demo-state-object></demo-state-object>
-      <div style="height:400px"></div>
     `;
   }
 }

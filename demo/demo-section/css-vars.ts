@@ -16,8 +16,8 @@ class CSSVarsDemo extends LitElement {
       .grid {
         grid-template-columns: 1fr 1fr 2fr;
         display: grid;
-        border-top: 1px solid var(--secondary-color);
-        border-right: 1px solid var(--secondary-color);
+        border-top: 1px solid var(--outline-color);
+        border-right: 1px solid var(--outline-color);
       }
       .var {
         display: flex;
@@ -25,8 +25,8 @@ class CSSVarsDemo extends LitElement {
         gap: 1rem;
         white-space: nowrap;
         padding: 0.5rem;
-        border-left: 1px solid var(--secondary-color);
-        border-bottom: 1px solid var(--secondary-color);
+        border-left: 1px solid var(--outline-color);
+        border-bottom: 1px solid var(--outline-color);
         min-height: 2rem;
         text-wrap: wrap;
       }

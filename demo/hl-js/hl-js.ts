@@ -1,15 +1,18 @@
 import { LitElement, html } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
-import { defaultStyles, githubStyles, styles } from "./hl-js.styles";
+import { defaultStyles, githubStyles, ideStyles, styles } from "./hl-js.styles";
 import HLJS from "highlight.js";
 import { ThemeController } from "../demo-tools";
 
 @customElement("hl-js")
 export class HLJSComponent extends LitElement {
-  static styles = [styles, defaultStyles, githubStyles];
+  static styles = [styles, defaultStyles, githubStyles, ideStyles];
 
   @property({ type: String })
   url: string = "";
+  /** Inline source. When set, nothing is fetched and the URL view is left unused. */
+  @property({ type: String })
+  code = "";
   @property({ type: String })
   showBorder = true;
   @property({ type: String })
@@ -23,12 +26,37 @@ export class HLJSComponent extends LitElement {
   codeElement: HTMLElement;
 
   private theme = new ThemeController(this);
+  private painted = "";
 
   constructor() {
     super();
   }
 
+  protected updated(): void {
+    if (this.code) this.paintCode(this.code);
+  }
+
   render() {
+    if (this.code) {
+      const themeName = this.theme.value == "dark" ? "dark" : "light";
+      return html`
+        <div class="code-container">
+          <div
+            class="file file-${themeName}"
+            style="${this.showBorder ? "" : "border:0"}"
+          >
+            <div class="file-data">
+              <div class="code-area">
+                <pre style="tab-size:8"><code class="ts ${
+                  this.showLineNumbers ? "" : "hide-line-numbers"
+                }"></code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
     const target = new URL(this.url);
     const lineSplit = target.hash.split("-");
     const startLine =
@@ -50,40 +78,40 @@ export class HLJSComponent extends LitElement {
     setTimeout(() => this.fetchFiles(fileURL, startLine, endLine));
 
     return html`
-      <div class="code-container" style="max-width:80dvw;">
+      <div class="code-container">
         <div
           class="file file-${this.theme.value == "dark" ? "dark" : "light"}"
           style="${this.showBorder ? "" : "border:0"}"
         >
           <div class="file-data">
             <div class="code-area">
-              <pre
-                style="tab-size:${tabSize}"
-              ><code class="${fileExtension} ${this.showLineNumbers
-                ? ""
-                : "hide-line-numbers"}"></code></pre>
+              <pre style="tab-size:${tabSize}"><code class="${fileExtension} ${
+                this.showLineNumbers ? "" : "hide-line-numbers"
+              }"></code></pre>
             </div>
           </div>
 
-          ${this.showFileMeta
-            ? html`<div
-                class="file-meta file-meta-${this.theme.value == "dark"
-                  ? "dark"
-                  : "light"}"
-                style="${this.showBorder ? "" : "border:0"}"
-              >
-                <a target="_blank" href="${this.url}" style="float:right"
-                  >view</a
+          ${
+            this.showFileMeta
+              ? html`<div
+                  class="file-meta file-meta-${
+                    this.theme.value == "dark" ? "dark" : "light"
+                  }"
+                  style="${this.showBorder ? "" : "border:0"}"
                 >
-                <a target="_blank" href="${this.url}"
-                  >${decodeURIComponent(
-                    this.showFullPath
-                      ? filePath
-                      : pathSplit[pathSplit.length - 1],
-                  )}</a
-                >
-              </div>`
-            : ""}
+                  <a target="_blank" href="${this.url}" style="float:right"
+                    >view</a
+                  >
+                  <a target="_blank" href="${this.url}"
+                    >${decodeURIComponent(
+                      this.showFullPath
+                        ? filePath
+                        : pathSplit[pathSplit.length - 1],
+                    )}</a
+                  >
+                </div>`
+              : ""
+          }
         </div>
       </div>
     `;
@@ -130,8 +158,20 @@ export class HLJSComponent extends LitElement {
       }
 
       this.codeElement.textContent = codeText;
-
+      delete this.codeElement.dataset.highlighted;
       HLJS.highlightElement(this.codeElement);
     });
+  }
+
+  private paintCode(codeText: string) {
+    if (!this.codeElement) return;
+    if (this.painted === codeText && this.codeElement.dataset.highlighted) {
+      return;
+    }
+    this.painted = codeText;
+    const text = codeText.endsWith("\n") ? codeText.slice(0, -1) : codeText;
+    this.codeElement.textContent = `${text}\n`;
+    delete this.codeElement.dataset.highlighted;
+    HLJS.highlightElement(this.codeElement);
   }
 }

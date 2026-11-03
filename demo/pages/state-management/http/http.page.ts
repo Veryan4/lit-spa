@@ -1,12 +1,22 @@
 import { LitElement, html, css } from "lit";
 import { customElement } from "lit/decorators.js";
 import { TranslationController } from "../../../demo-tools";
+import { docStyles } from "../../../doc.styles";
 import "../../../demo-tools";
 import "./http-demo";
+
+const usage = `import { httpService } from "@veryan/lit-spa/http";
+
+type Todo = { id: number; title: string };
+
+const todos = await httpService.get<Todo[]>(
+  "https://jsonplaceholder.typicode.com/todos",
+);`;
 
 @customElement("demo-http")
 class HttpPage extends LitElement {
   static styles = [
+    docStyles,
     css`
       .description {
         margin: 1rem 0;
@@ -19,12 +29,12 @@ class HttpPage extends LitElement {
   render() {
     return html`
       <div class="description">
-        A service that simplifies the web browsers' fetch api. It has a 5 min
-        cache by default which can be busted on command. The baseHttp function
-        can be overwritten to apply interceptor functions to handle different
-        http responses
+        A service around the browser fetch API. Responses are cached for 5
+        minutes, and the cache can be cleared on command. Replace baseHttp to
+        intercept responses.
       </div>
       <demo-section
+        .usage=${usage}
         .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/state-management/http/http-demo.ts"}
         .documentation=${[]}
       >

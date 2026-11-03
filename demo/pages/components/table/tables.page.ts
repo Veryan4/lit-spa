@@ -2,7 +2,36 @@ import { LitElement, html, css } from "lit";
 import { customElement } from "lit/decorators.js";
 import { TranslationController } from "../../../../src";
 import { CSSVar } from "/@/demo-section/css-vars";
+import { docStyles } from "../../../doc.styles";
 import "../../../demo-tools";
+
+const standardUsage = `import "@veryan/lit-spa/components";
+
+const columns = [
+  { field: "name", name: "Name" },
+  { field: "email", name: "Email" },
+];
+
+html\`<lit-spa-table .columns=\${columns} .data=\${rows}></lit-spa-table>\`;`;
+
+const localUsage = `import "@veryan/lit-spa/components";
+
+html\`
+  <lit-spa-local-table
+    .columns=\${columns}
+    .data=\${rows}
+    .pageSize=\${20}
+  ></lit-spa-local-table>
+\`;`;
+
+const infiniteUsage = `import "@veryan/lit-spa/components";
+
+html\`
+  <lit-spa-infinite-table
+    .columns=\${columns}
+    .data=\${rows}
+  ></lit-spa-infinite-table>
+\`;`;
 import "./table-demo";
 import "./local-table-demo";
 import "./infinite-table-demo";
@@ -10,6 +39,7 @@ import "./infinite-table-demo";
 @customElement("demo-tables")
 class TablesPageDemo extends LitElement {
   static styles = [
+    docStyles,
     css`
       .description {
         margin: 1rem 0;
@@ -25,7 +55,7 @@ class TablesPageDemo extends LitElement {
   tableCSSVariables: CSSVar[] = [
     {
       name: "--table-border-color",
-      default: "--secondary-color or black",
+      default: "--outline-color or #b0bec5",
       description: "The color of the lines of the table",
     },
     {
@@ -64,9 +94,10 @@ class TablesPageDemo extends LitElement {
     return html`
       <h3>Standard</h3>
       <div class="description">
-        A standard responsive table which styling can be customized.
+        A responsive table. Its styling can be customized.
       </div>
       <demo-section
+        .usage=${standardUsage}
         .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/components/table/table-demo.ts"}
         .documentation=${[
           {
@@ -123,10 +154,11 @@ class TablesPageDemo extends LitElement {
       </demo-section>
       <h3 class="title">Local Table</h3>
       <div class="description">
-        A table which can perform efficient searching, sorting, and filtering on
-        data that is available on the client side.
+        Searching, sorting, and filtering for data that is already on the
+        client.
       </div>
       <demo-section
+        .usage=${localUsage}
         .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/components/table/local-table-demo.ts"}
         .documentation=${[
           {
@@ -248,7 +280,7 @@ class TablesPageDemo extends LitElement {
           },
           {
             name: "--search-border-color",
-            default: "#7aaaf6",
+            default: "--theme-very-dark or #5391f3",
             description: "The border color when the search input is selected",
           },
         ]}
@@ -261,6 +293,7 @@ class TablesPageDemo extends LitElement {
         server response when scrolling.
       </div>
       <demo-section
+        .usage=${infiniteUsage}
         .url=${"https://github.com/Veryan4/lit-spa/blob/master/demo/pages/components/table/infinite-table-demo.ts"}
         .documentation=${[
           {

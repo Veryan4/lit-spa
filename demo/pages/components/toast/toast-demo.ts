@@ -1,25 +1,21 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, html } from "lit";
 import { customElement } from "lit/decorators.js";
 import { toastService } from "../../../demo-tools";
+import { demoActionStyles } from "../../../demo-action.styles";
 import "../../../demo-tools";
 
 @customElement("toast-demo")
 class ToastDemo extends LitElement {
-  static styles = [
-    css`
-      button {
-        cursor: pointer;
-      }
-    `,
-  ];
+  static styles = [demoActionStyles];
 
   render() {
     return html`
-      <div class="body">
-        <button @click=${() => toastService.newToast("Simple toast")}>
+      <div class="actions">
+        <button type="button" @click=${() => toastService.newToast("Simple toast")}>
           Simple toast
         </button>
         <button
+          type="button"
           @click=${() =>
             toastService.customToast({
               text: "Custom toast",

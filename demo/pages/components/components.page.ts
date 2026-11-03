@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { customElement } from "lit/decorators.js";
 import { HashController, TranslationController } from "../../demo-tools";
+import { docStyles } from "../../doc.styles";
 import "../../demo-tools";
 import "./tooltip/tooltip.page";
 import "./toast/toast.page";
@@ -9,6 +10,7 @@ import "./table/tables.page";
 @customElement("demo-components")
 class ComponentsPage extends LitElement {
   static styles = [
+    docStyles,
     css`
       .description {
         margin: 1rem 0;
@@ -26,8 +28,7 @@ class ComponentsPage extends LitElement {
     return html`
       <h1>Components</h1>
       <div class="description">
-        Here's a few components which often end up getting requested when
-        working on a application.
+        A few components that show up in most applications.
       </div>
       <div class="title">
         <lit-spa-hash id="tooltip">
@@ -43,7 +44,7 @@ class ComponentsPage extends LitElement {
       <demo-toast></demo-toast>
       <div class="title">
         <lit-spa-hash id="tables">
-          <h1>Tables</h1>
+          <h2>Tables</h2>
         </lit-spa-hash>
       </div>
       <demo-tables></demo-tables>

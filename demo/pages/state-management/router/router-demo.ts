@@ -1,6 +1,7 @@
 import { LitElement, css, html } from "lit";
 import { customElement } from "lit/decorators.js";
 import { RouteController, Route, routerService } from "../../../demo-tools";
+import { demoActionStyles } from "../../../demo-action.styles";
 import "../../../demo-tools";
 
 const routes: Route[] = [
@@ -25,15 +26,16 @@ const routes: Route[] = [
 @customElement("router-demo")
 class RouterDemo extends LitElement {
   static styles = [
+    demoActionStyles,
     css`
-      button {
-        cursor: pointer;
-        width: fit-content;
-      }
-      .body {
+      .stack {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+      p {
+        margin: 0;
       }
     `,
   ];
@@ -42,16 +44,20 @@ class RouterDemo extends LitElement {
 
   render() {
     return html`
-      <div class="body">
-        Notice the change in url of this page as you click on the buttons.
-        Refresh the page and notice which component is displayed in this demo.
-        <div>
+      <div class="stack">
+        <p>
+          Notice the change in url of this page as you click on the buttons.
+          Refresh the page and notice which component is displayed in this demo.
+        </p>
+        <div class="actions">
           <button
+            type="button"
             @click=${() => routerService.navigate("state-management/one")}
           >
             One
           </button>
           <button
+            type="button"
             @click=${() => routerService.navigate("state-management/two")}
           >
             Two

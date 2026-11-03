@@ -30,7 +30,6 @@ class TablePageDemo extends LitElement {
       <lit-spa-table
         .columns=${this.columns}
         .data=${this.data.slice(0, 10)}
-        .columnStyles=${{ backgroundColor: "var(--theme-very-light)" }}
       ></lit-spa-table>
     `;
   }

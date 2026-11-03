@@ -11,7 +11,7 @@ export const styles = css`
     z-index: 10000;
     font-family: var(
       --toast-font-family,
-      var(--font-family, "Roboto Sans", sans-serif)
+      var(--font-family, Roboto, sans-serif)
     );
   }
 

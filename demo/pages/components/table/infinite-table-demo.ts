@@ -40,7 +40,6 @@ class InfiniteTableDemo extends LitElement {
           .columns=${this.columns}
           .data=${this.chunkedData}
           @scrolled=${this.onScroll}
-          .columnStyles=${{ backgroundColor: "var(--theme-very-light)" }}
         ></lit-spa-infinite-table>
       </div>
     `;
